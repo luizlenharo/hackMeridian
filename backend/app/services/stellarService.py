@@ -208,7 +208,7 @@ class StellarService:
         try:
             Keypair.from_public_key(public_key)
             return True
-        except:
+        except ValueError:
             return False
 
     def setup_trust_line(self, user_secret_key: str, asset_code: str):
