@@ -1,7 +1,13 @@
 from functools import lru_cache
+from typing import Optional
+
+from pydantic_settings import BaseSettings
 
 
-class Settings:
+class Settings(BaseSettings):
+    # Database Configuration
+    DATABASE_URL: str
+
     # Stellar Configuration
     STELLAR_NETWORK: str = "testnet"
     STELLAR_HORIZON_URL: str = "https://horizon-testnet.stellar.org"

@@ -2,7 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
+from app.database import engine
+from app.models import database_models
 from app.routes import auditor, certification, restaurant
+
+# Criar tabelas no banco de dados
+database_models.Base.metadata.create_all(bind=engine)
 
 settings = get_settings()
 

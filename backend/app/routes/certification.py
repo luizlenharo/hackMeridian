@@ -1,109 +1,137 @@
+import json
 import logging
-import uuid
 from datetime import datetime, timedelta
 
+from app.database import get_db
+from app.models import database_models
 from app.models.schemas import (
     APIResponse,
     CertificationRequest,
     CertificationStatus,
 )
-from app.routes.auditor import auditors_db
-from app.routes.restaurant import restaurants_db
 from app.services.stellarService import StellarService
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-
-# Banco de dados de certificações em memória
-certifications_db = {}
 stellar_service = StellarService()
 
 
 @router.post("/request", response_model=APIResponse)
-async def request_certification(cert_request: CertificationRequest):
+async def request_certification(
+    cert_request: CertificationRequest, db: Session = Depends(get_db)
+):
     """Solicita nova certificação para um restaurante"""
     try:
         # Verificar se restaurante existe
-        if cert_request.restaurant_id not in restaurants_db:
+        restaurant = db.query(database_models.Restaurant).filter(
+            database_models.Restaurant.id == cert_request.restaurant_id
+        ).first()
+        
+        if not restaurant:
             raise HTTPException(status_code=404, detail="Restaurante não encontrado")
 
-        restaurant = restaurants_db[cert_request.restaurant_id]
-
         # Verificar se já existe solicitação pendente do mesmo tipo
-        for cert in certifications_db.values():
-            if (
-                cert["restaurant_id"] == cert_request.restaurant_id
-                and cert["certification_type"] == cert_request.certification_type
-                and cert["status"] == CertificationStatus.PENDING
-            ):
-                raise HTTPException(
-                    status_code=400,
-                    detail="Já existe uma solicitação pendente deste tipo",
-                )
+        existing_cert = db.query(database_models.Certification).filter(
+            database_models.Certification.restaurant_id == cert_request.restaurant_id,
+            database_models.Certification.certification_type == cert_request.certification_type,
+            database_models.Certification.status == CertificationStatus.PENDING
+        ).first()
+        
+        if existing_cert:
+            raise HTTPException(
+                status_code=400,
+                detail="Já existe uma solicitação pendente deste tipo",
+            )
 
         # Criar nova solicitação
-        cert_id = str(uuid.uuid4())
-        certification = {
-            "id": cert_id,
-            "restaurant_id": cert_request.restaurant_id,
-            "certification_type": cert_request.certification_type,
-            "products": cert_request.products,
-            "status": CertificationStatus.PENDING,
-            "auditor_id": None,
-            "issued_at": None,
-            "expires_at": None,
-            "transaction_hash": None,
-            "notes": cert_request.notes,
-            "documentation": cert_request.documentation or [],
-            "created_at": datetime.now().isoformat(),
-        }
-
-        certifications_db[cert_id] = certification
+        new_certification = database_models.Certification(
+            restaurant_id=cert_request.restaurant_id,
+            certification_type=cert_request.certification_type,
+            products=json.dumps(cert_request.products),  # Converter lista para JSON
+            status=CertificationStatus.PENDING,
+            notes=cert_request.notes,
+            created_at=datetime.now()
+        )
+        
+        db.add(new_certification)
+        db.commit()
+        db.refresh(new_certification)
 
         return APIResponse(
             success=True,
             message="Solicitação de certificação criada com sucesso",
-            data={"certification_id": cert_id},
+            data={"certification_id": new_certification.id},
         )
 
     except HTTPException:
         raise
     except Exception as e:
+        db.rollback()
         logger.error(f"Erro ao solicitar certificação: {e}")
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
 
 
 @router.get("/pending", response_model=APIResponse)
 async def get_pending_certifications(
-    auditor_id: str = Query(None, description="Filtrar por auditor"),
+    auditor_id: int = Query(None, description="Filtrar por auditor"),
     cert_type: str = Query(None, description="Filtrar por tipo de certificação"),
+    db: Session = Depends(get_db)
 ):
     """Lista certificações pendentes de aprovação"""
     try:
-        pending_certs = []
-
-        for cert in certifications_db.values():
-            if cert["status"] != CertificationStatus.PENDING:
-                continue
-
-            if auditor_id and cert.get("auditor_id") != auditor_id:
-                continue
-
-            if cert_type and cert["certification_type"] != cert_type:
-                continue
-
-            # Adicionar informações do restaurante
-            restaurant = restaurants_db.get(cert["restaurant_id"])
-            cert_with_restaurant = cert.copy()
-            cert_with_restaurant["restaurant"] = restaurant
-
-            pending_certs.append(cert_with_restaurant)
+        # Construir query base
+        query = db.query(database_models.Certification).filter(
+            database_models.Certification.status == CertificationStatus.PENDING
+        )
+        
+        # Aplicar filtros adicionais
+        if auditor_id:
+            query = query.filter(database_models.Certification.auditor_id == auditor_id)
+        
+        if cert_type:
+            query = query.filter(database_models.Certification.certification_type == cert_type)
+        
+        # Executar query
+        pending_certs = query.all()
+        
+        # Preparar resultado
+        result = []
+        for cert in pending_certs:
+            # Obter informações do restaurante
+            restaurant = db.query(database_models.Restaurant).filter(
+                database_models.Restaurant.id == cert.restaurant_id
+            ).first()
+            
+            # Converter para dicionário
+            cert_dict = {
+                "id": cert.id,
+                "restaurant_id": cert.restaurant_id,
+                "certification_type": cert.certification_type,
+                "products": json.loads(cert.products),
+                "status": cert.status,
+                "auditor_id": cert.auditor_id,
+                "issued_at": cert.issued_at.isoformat() if cert.issued_at else None,
+                "expires_at": cert.expires_at.isoformat() if cert.expires_at else None,
+                "transaction_hash": cert.transaction_hash,
+                "notes": cert.notes,
+                "created_at": cert.created_at.isoformat(),
+                "restaurant": {
+                    "id": restaurant.id,
+                    "name": restaurant.name,
+                    "address": restaurant.address,
+                    "stellar_public_key": restaurant.stellar_public_key,
+                    "created_at": restaurant.created_at.isoformat()
+                } if restaurant else None
+            }
+            
+            result.append(cert_dict)
 
         return APIResponse(
             success=True,
-            message=f"Encontradas {len(pending_certs)} certificações pendentes",
-            data={"certifications": pending_certs},
+            message=f"Encontradas {len(result)} certificações pendentes",
+            data={"certifications": result},
         )
 
     except Exception as e:
@@ -112,73 +140,83 @@ async def get_pending_certifications(
 
 
 @router.post("/{certification_id}/approve", response_model=APIResponse)
-async def approve_certification(certification_id: str, auditor_id: str):
+async def approve_certification(
+    certification_id: int, auditor_id: int, db: Session = Depends(get_db)
+):
     """Aprova uma certificação e emite token na blockchain"""
     try:
         # Verificar se certificação existe
-        if certification_id not in certifications_db:
+        certification = db.query(database_models.Certification).filter(
+            database_models.Certification.id == certification_id
+        ).first()
+        
+        if not certification:
             raise HTTPException(status_code=404, detail="Certificação não encontrada")
 
-        certification = certifications_db[certification_id]
-
-        if certification["status"] != CertificationStatus.PENDING:
+        if certification.status != CertificationStatus.PENDING:
             raise HTTPException(
                 status_code=400, detail="Certificação não está pendente"
             )
 
         # Verificar se auditor existe e está ativo
-        if auditor_id not in auditors_db:
+        auditor = db.query(database_models.Auditor).filter(
+            database_models.Auditor.id == auditor_id
+        ).first()
+        
+        if not auditor:
             raise HTTPException(status_code=404, detail="Auditor não encontrado")
-
-        auditor = auditors_db[auditor_id]
-        if not auditor["is_active"]:
+            
+        if not auditor.is_active:
             raise HTTPException(status_code=400, detail="Auditor não está ativo")
 
         # Verificar se auditor tem especialização no tipo de certificação
-        if certification["certification_type"] not in auditor["specializations"]:
+        auditor_specializations = json.loads(auditor.specializations)
+        if certification.certification_type not in auditor_specializations:
             raise HTTPException(
                 status_code=400,
                 detail="Auditor não tem especialização neste tipo de certificação",
             )
 
         # Obter restaurante
-        restaurant = restaurants_db[certification["restaurant_id"]]
-
-        # Configurar trustline se necessário (seria feito pelo restaurante normalmente)
-        # stellar_service.setup_trust_line(restaurant_secret, certification["certification_type"])
+        restaurant = db.query(database_models.Restaurant).filter(
+            database_models.Restaurant.id == certification.restaurant_id
+        ).first()
 
         # Emitir token de certificação na blockchain
         issued_at = datetime.now()
         expires_at = issued_at + timedelta(days=365)  # Certificação válida por 1 ano
 
         metadata = {
-            "restaurant_id": certification["restaurant_id"],
+            "restaurant_id": certification.restaurant_id,
             "issued_at": issued_at.isoformat(),
             "expires_at": expires_at.isoformat(),
             "auditor_id": auditor_id,
         }
 
         result = stellar_service.issue_certification_token(
-            restaurant["stellar_public_key"],
-            certification["certification_type"],
+            restaurant.stellar_public_key,
+            certification.certification_type,
             metadata,
         )
 
         if not result["success"]:
             raise HTTPException(
                 status_code=500,
-                detail=f"Erro ao emitir certificação: {result['error']}",
+                detail=f"Erro ao emitir certificação: {result.get('error', 'Erro desconhecido')}",
             )
 
         # Atualizar certificação
-        certification["status"] = CertificationStatus.APPROVED
-        certification["auditor_id"] = auditor_id
-        certification["issued_at"] = issued_at.isoformat()
-        certification["expires_at"] = expires_at.isoformat()
-        certification["transaction_hash"] = result["transaction_hash"]
+        certification.status = CertificationStatus.APPROVED
+        certification.auditor_id = auditor_id
+        certification.issued_at = issued_at
+        certification.expires_at = expires_at
+        certification.transaction_hash = result["transaction_hash"]
 
         # Atualizar contador do auditor
-        auditor["certifications_issued"] += 1
+        auditor.certifications_issued += 1
+
+        # Salvar alterações
+        db.commit()
 
         return APIResponse(
             success=True,
@@ -193,32 +231,45 @@ async def approve_certification(certification_id: str, auditor_id: str):
     except HTTPException:
         raise
     except Exception as e:
+        db.rollback()
         logger.error(f"Erro ao aprovar certificação: {e}")
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
 
 
 @router.post("/{certification_id}/reject", response_model=APIResponse)
-async def reject_certification(certification_id: str, auditor_id: str, reason: str):
+async def reject_certification(
+    certification_id: int, auditor_id: int, reason: str, db: Session = Depends(get_db)
+):
     """Rejeita uma certificação"""
     try:
-        if certification_id not in certifications_db:
+        # Verificar se certificação existe
+        certification = db.query(database_models.Certification).filter(
+            database_models.Certification.id == certification_id
+        ).first()
+        
+        if not certification:
             raise HTTPException(status_code=404, detail="Certificação não encontrada")
 
-        certification = certifications_db[certification_id]
-
-        if certification["status"] != CertificationStatus.PENDING:
+        if certification.status != CertificationStatus.PENDING:
             raise HTTPException(
                 status_code=400, detail="Certificação não está pendente"
             )
 
         # Verificar auditor
-        if auditor_id not in auditors_db:
+        auditor = db.query(database_models.Auditor).filter(
+            database_models.Auditor.id == auditor_id
+        ).first()
+        
+        if not auditor:
             raise HTTPException(status_code=404, detail="Auditor não encontrado")
 
         # Atualizar certificação
-        certification["status"] = CertificationStatus.REJECTED
-        certification["auditor_id"] = auditor_id
-        certification["notes"] = f"Rejeitada: {reason}"
+        certification.status = CertificationStatus.REJECTED
+        certification.auditor_id = auditor_id
+        certification.notes = f"Rejeitada: {reason}"
+        
+        # Salvar alterações
+        db.commit()
 
         return APIResponse(
             success=True,
@@ -229,29 +280,48 @@ async def reject_certification(certification_id: str, auditor_id: str, reason: s
     except HTTPException:
         raise
     except Exception as e:
+        db.rollback()
         logger.error(f"Erro ao rejeitar certificação: {e}")
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
 
 
 @router.get("/restaurant/{restaurant_id}", response_model=APIResponse)
-async def get_restaurant_certifications(restaurant_id: str):
+async def get_restaurant_certifications(restaurant_id: int, db: Session = Depends(get_db)):
     """Obtém todas as certificações de um restaurante"""
     try:
-        if restaurant_id not in restaurants_db:
+        # Verificar se restaurante existe
+        restaurant = db.query(database_models.Restaurant).filter(
+            database_models.Restaurant.id == restaurant_id
+        ).first()
+        
+        if not restaurant:
             raise HTTPException(status_code=404, detail="Restaurante não encontrado")
 
-        restaurant = restaurants_db[restaurant_id]
-
         # Certificações do banco de dados local
-        local_certs = [
-            cert
-            for cert in certifications_db.values()
-            if cert["restaurant_id"] == restaurant_id
-        ]
+        local_certs_query = db.query(database_models.Certification).filter(
+            database_models.Certification.restaurant_id == restaurant_id
+        ).all()
+        
+        # Converter para lista de dicionários
+        local_certs = []
+        for cert in local_certs_query:
+            local_certs.append({
+                "id": cert.id,
+                "restaurant_id": cert.restaurant_id,
+                "certification_type": cert.certification_type,
+                "products": json.loads(cert.products),
+                "status": cert.status,
+                "auditor_id": cert.auditor_id,
+                "issued_at": cert.issued_at.isoformat() if cert.issued_at else None,
+                "expires_at": cert.expires_at.isoformat() if cert.expires_at else None,
+                "transaction_hash": cert.transaction_hash,
+                "notes": cert.notes,
+                "created_at": cert.created_at.isoformat()
+            })
 
         # Certificações ativas na blockchain
         blockchain_certs = stellar_service.get_restaurant_certifications(
-            restaurant["stellar_public_key"]
+            restaurant.stellar_public_key
         )
 
         return APIResponse(
@@ -272,25 +342,56 @@ async def get_restaurant_certifications(restaurant_id: str):
 
 
 @router.get("/{certification_id}", response_model=APIResponse)
-async def get_certification_details(certification_id: str):
+async def get_certification_details(certification_id: int, db: Session = Depends(get_db)):
     """Obtém detalhes de uma certificação específica"""
     try:
-        if certification_id not in certifications_db:
+        # Buscar certificação
+        certification = db.query(database_models.Certification).filter(
+            database_models.Certification.id == certification_id
+        ).first()
+        
+        if not certification:
             raise HTTPException(status_code=404, detail="Certificação não encontrada")
 
-        certification = certifications_db[certification_id]
+        # Buscar restaurante e auditor relacionados
+        restaurant = db.query(database_models.Restaurant).filter(
+            database_models.Restaurant.id == certification.restaurant_id
+        ).first()
+        
+        auditor = None
+        if certification.auditor_id:
+            auditor = db.query(database_models.Auditor).filter(
+                database_models.Auditor.id == certification.auditor_id
+            ).first()
 
-        # Adicionar informações do restaurante e auditor
-        restaurant = restaurants_db.get(certification["restaurant_id"])
-        auditor = (
-            auditors_db.get(certification["auditor_id"])
-            if certification["auditor_id"]
-            else None
-        )
-
-        cert_details = certification.copy()
-        cert_details["restaurant"] = restaurant
-        cert_details["auditor"] = auditor
+        # Montar resposta
+        cert_details = {
+            "id": certification.id,
+            "restaurant_id": certification.restaurant_id,
+            "certification_type": certification.certification_type,
+            "products": json.loads(certification.products),
+            "status": certification.status,
+            "auditor_id": certification.auditor_id,
+            "issued_at": certification.issued_at.isoformat() if certification.issued_at else None,
+            "expires_at": certification.expires_at.isoformat() if certification.expires_at else None,
+            "transaction_hash": certification.transaction_hash,
+            "notes": certification.notes,
+            "created_at": certification.created_at.isoformat(),
+            "restaurant": {
+                "id": restaurant.id,
+                "name": restaurant.name,
+                "address": restaurant.address,
+                "stellar_public_key": restaurant.stellar_public_key,
+                "created_at": restaurant.created_at.isoformat()
+            } if restaurant else None,
+            "auditor": {
+                "id": auditor.id,
+                "name": auditor.name,
+                "email": auditor.email,
+                "specializations": json.loads(auditor.specializations),
+                "is_active": auditor.is_active
+            } if auditor else None
+        }
 
         return APIResponse(
             success=True, message="Certificação encontrada", data=cert_details
