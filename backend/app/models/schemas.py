@@ -26,7 +26,7 @@ class RestaurantCreate(BaseModel):
 
 
 class Restaurant(BaseModel):
-    id: str
+    id: int
     name: str
     address: str
     stellar_public_key: str
@@ -36,7 +36,7 @@ class Restaurant(BaseModel):
 
 # Certification Models
 class CertificationRequest(BaseModel):
-    restaurant_id: str
+    restaurant_id: int
     certification_type: CertificationType
     products: List[str] = Field(..., min_items=1)
     documentation: Optional[List[str]] = []
@@ -44,8 +44,8 @@ class CertificationRequest(BaseModel):
 
 
 class Certification(BaseModel):
-    id: str
-    restaurant_id: str
+    id: int
+    restaurant_id: int
     certification_type: CertificationType
     products: List[str]
     status: CertificationStatus
@@ -67,7 +67,7 @@ class AuditorCreate(BaseModel):
 
 
 class Auditor(BaseModel):
-    id: str
+    id: int
     name: str
     email: str
     specializations: List[CertificationType]
@@ -79,7 +79,7 @@ class Auditor(BaseModel):
 
 
 class AuditDecision(BaseModel):
-    certification_id: str
+    certification_id: int
     approved: bool
     notes: Optional[str] = Field(None, max_length=500)
 
@@ -106,4 +106,3 @@ class RestaurantFilter(BaseModel):
     certifications: Optional[List[CertificationType]] = None
     page: int = Field(1, ge=1)
     size: int = Field(10, ge=1, le=100)
-
