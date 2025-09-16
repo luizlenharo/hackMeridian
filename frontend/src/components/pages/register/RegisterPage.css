@@ -8,28 +8,29 @@
   font-family: "Segoe UI", sans-serif;
 }
 
+.brand-logo{
+  position: absolute;
+  width: auto;
+  height: 80px;
+}
+
 /* Header */
 .login-header {
-  padding: 1rem 2rem;
+  padding: 1rem 1rem;
   display: flex;
   justify-content: center;
   background: white;
   border-bottom: 1px solid #e5e7eb;
+  height: 100px;
 }
  
 .logo-container {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-}
-
-.logo-icon {
-  color: #16a34a;
-}
-
-.brand-name {
-  font-size: 1.25rem;
-  font-weight: 700;
+  gap: 0.1rem;
+  position: relative;
+  width: 200px;
+  height: 80px;
 }
 
 .brand-subtitle {

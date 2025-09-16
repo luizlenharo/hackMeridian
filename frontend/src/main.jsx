@@ -5,12 +5,11 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import App from './App.jsx';
 import LoginPage from './components/pages/login/Login.jsx';
-import RegisterPage from './components/register/RegisterPage.jsx';
+import RegisterPage from './components/pages/register/RegisterPage.jsx';
 
 import './index.css';
 import UserHomePage from './components/pages/user/UserHomePage.jsx';
-import ResgisterRestaurant from './components/register/RegisterRestaurant.jsx';
-import LoginRestaurant from './components/pages/login/LoginRestaurant.jsx';
+import ResgisterRestaurant from './components/pages/register/RegisterRestaurant.jsx';
 import RestaurantPage from './components/pages/restaurant/RestaurantPage.jsx';
 
 // 2. Crie a configuração das suas rotas

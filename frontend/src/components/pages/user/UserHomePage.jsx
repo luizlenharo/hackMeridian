@@ -39,43 +39,27 @@ const UserHomePage = () => {
 
 
   const dietaryPreferences = [
-    { id: 'gluten-free', label: 'Gluten-Free', icon: <Wheat size={20} /> },
-    { id: 'lactose-free', label: 'Lactose-Free', icon: <Droplet size={20} /> },
-    { id: 'vegan', label: 'Vegan', icon: <Leaf size={20} /> },
-    { id: 'halal', label: 'Halal', icon: <Moon size={20} /> },
-    { id: 'no-seafood', label: 'No Seafood', icon: <Fish size={20} /> },
-    { id: 'kosher', label: 'Kosher', icon: <Star size={20} /> }
-  ];
-
-  /*const restaurants = [
-    {
-      id: 1,
-      name: 'Green Garden Bistro',
-      description: 'Fresh, organic ingredients with extensive vegan and gluten-free options. Farm-to-table experience.',
-      rating: 4.8,
-      deliveryTime: '25min',
-      badges: ['vegan', 'gluten-free', 'organic'],
-      image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=250&fit=crop'
-    },
-    {
-      id: 2,
-      name: 'Mediterranean Delight',
-      description: 'Authentic Mediterranean cuisine with fresh ingredients and healthy options.',
-      rating: 4.6,
-      deliveryTime: '30min',
-      badges: ['halal', 'no-seafood'],
-      image: 'https://images.unsplash.com/photo-1544148103-0773bf10d330?w=400&h=250&fit=crop'
-    },
-    {
-      id: 3,
-      name: 'Kosher Kitchen',
-      description: 'Traditional kosher meals prepared with care and attention to dietary laws.',
-      rating: 4.7,
-      deliveryTime: '35min',
-      badges: ['kosher', 'lactose-free'],
-      image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=250&fit=crop'
-    } 
-  ];*/
+  { 
+    id: 'vegan', 
+    backendCode: 'VEGAN' // ← VEGAN_ASSET no backend
+  },
+  { 
+    id: 'gluten-free', 
+    backendCode: 'GLUTENFREE' // ← GLUTEN_FREE_ASSET no backend
+  },
+  { 
+    id: 'no-seafood', 
+    backendCode: 'SEAFOODFREE' // ← SEAFOOD_FREE_ASSET no backend  
+  },
+  { 
+    id: 'kosher', 
+    backendCode: 'KOSHER' // ← KOSHER_ASSET no backend
+  },
+  { 
+    id: 'halal', 
+    backendCode: 'HALAL' // ← HALAL_ASSET no backend
+  }
+];9
 
 
 
@@ -324,10 +308,10 @@ const UserHomePage = () => {
 
         {/* Restaurant Section */}
         <div className="restaurants-section">
-          <h2 className="restaurants-title">Restaurantes para você</h2>
-          <p className="restaurants-subtitle">Encontre opções baseadas em suas preferências</p>
+          <h2 className="restaurants-title">Restaurantes for you</h2>
+          <p className="restaurants-subtitle">Find options based on your preferences</p>
 
-          {isLoading && <p>Carregando restaurantes...</p>}
+          {isLoading && <p>Loading Restaurants...</p>}
           {error && <p>Erro: {error}</p>}
 
           {!isLoading && !error && (
