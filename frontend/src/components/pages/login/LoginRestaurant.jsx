@@ -19,6 +19,7 @@ function LoginRestaurant() {
       alert("❌ Email ou senha incorretos!");
     }
     console.log('Login com:', { email, password });
+    
   };
 
   return (

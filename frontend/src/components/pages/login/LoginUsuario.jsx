@@ -1,11 +1,13 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './LoginUsuario.css'; // O CSS para esta página
 
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = new useNavigate('');
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -14,11 +16,13 @@ function LoginPage() {
 
     if (storedUser && storedUser.email === email && storedUser.password === password) {
       alert("✅ Login realizado com sucesso!");
-    // aqui você pode redirecionar com useNavigate()
+      // Navega para a pagina inicial do usuario
+      navigate('/user-home');
     } else {
       alert("❌ Email ou senha incorretos!");
     }
     console.log('Login com:', { email, password });
+    navigate('/user-home');
   };
 
   return (

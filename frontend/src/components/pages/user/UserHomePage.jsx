@@ -1,11 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Search, MapPin, User, Wheat, Droplet, Leaf, Moon, Fish, Star, Clock, ChevronDown, Settings, LogOut, Heart, ShoppingBag } from 'lucide-react';
 import './UserHomePage.css'; // CSS file needs to be created separately
 
+const API_URL = 'http://localhost:8000/api/restaurant';
+
 const UserHomePage = () => {
+  const [restaurants, setRestaurants] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [selectedPreferences, setSelectedPreferences] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showUserMenu, setShowUserMenu] = useState(false);
+
+  // O useEffect é executado quando o componente é montado
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        // Chama o endpoint /list da sua API
+        const response = await fetch(`${API_URL}/list`);
+        if (!response.ok) {
+          throw new Error('Falha ao buscar os dados da API');
+        }
+        const data = await response.json();
+        setRestaurants(data.items); // A API retorna os restaurantes dentro da chave 'items'
+        console.log(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRestaurants();
+  }, []);
+
+
 
   const dietaryPreferences = [
     { id: 'gluten-free', label: 'Gluten-Free', icon: <Wheat size={20} /> },
@@ -16,7 +47,7 @@ const UserHomePage = () => {
     { id: 'kosher', label: 'Kosher', icon: <Star size={20} /> }
   ];
 
-  const restaurants = [
+  /*const restaurants = [
     {
       id: 1,
       name: 'Green Garden Bistro',
@@ -43,8 +74,10 @@ const UserHomePage = () => {
       deliveryTime: '35min',
       badges: ['kosher', 'lactose-free'],
       image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=250&fit=crop'
-    }
-  ];
+    } 
+  ];*/
+
+
 
   const togglePreference = (prefId) => {
     setSelectedPreferences(prev => 
@@ -55,12 +88,19 @@ const UserHomePage = () => {
   };
 
   const filteredRestaurants = restaurants.filter(restaurant => {
+    // Filtro de busca por texto (nome e endereço)
     const matchesSearch = restaurant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         restaurant.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesPreferences = selectedPreferences.length === 0 || 
-                              selectedPreferences.some(pref => restaurant.badges.includes(pref));
-    
+                         (restaurant.address && restaurant.address.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    // Filtro por preferências (certificações)
+    const matchesPreferences = selectedPreferences.length === 0 ||
+      selectedPreferences.every(prefId => {
+        const prefObject = dietaryPreferences.find(p => p.id === prefId);
+        if (!prefObject) return false;
+        // Verifica se alguma certificação do restaurante corresponde ao código da preferência
+        return restaurant.certifications.some(cert => cert.asset_code.toUpperCase() === prefObject.apiCode);
+      });
+
     return matchesSearch && matchesPreferences;
   });
 
@@ -284,56 +324,46 @@ const UserHomePage = () => {
 
         {/* Restaurant Section */}
         <div className="restaurants-section">
-          <h2 className="restaurants-title">Perfect restaurants for you</h2>
-          <p className="restaurants-subtitle">Curated based on popular dietary-friendly options</p>
-          
-          <div className="restaurants-grid">
-            {filteredRestaurants.map((restaurant) => (
-              <div key={restaurant.id} className="restaurant-card">
-                <div className="restaurant-image-fallback">
-                  <Leaf size={48} color="#16a34a" />
-                  <div className="rating-badge">
-                    <Star size={16} color="#fbbf24" fill="#fbbf24" />
-                    <span>{restaurant.rating}</span>
-                  </div>
-                </div>
-                <div className="restaurant-content">
-                  <div className="restaurant-header">
-                    <h3 className="restaurant-name">{restaurant.name}</h3>
-                    <div className="delivery-time">
-                      <Clock size={16} />
-                      {restaurant.deliveryTime}
+          <h2 className="restaurants-title">Restaurantes para você</h2>
+          <p className="restaurants-subtitle">Encontre opções baseadas em suas preferências</p>
+
+          {isLoading && <p>Carregando restaurantes...</p>}
+          {error && <p>Erro: {error}</p>}
+
+          {!isLoading && !error && (
+            <>
+              <div className="restaurants-grid">
+                {filteredRestaurants.map((restaurant) => (
+                  <Link key={restaurant.id} to={`/restaurant/${restaurant.id}`} className="restaurant-card-link">
+                    <div className="restaurant-card">
+                      <Leaf size={48} color="#16a34a" />
+                      <div className="restaurant-content">
+                         <h3 className="restaurant-name">{restaurant.name}</h3>
+                         <p className="restaurant-description">{restaurant.address}</p>
+                         <div className="badges-container">
+                           {restaurant.certifications?.map(cert => (
+                             <span key={cert.asset_code} className="badge">
+                               {cert.asset_code}
+                             </span>
+                           ))}
+                         </div>
+                      </div>
                     </div>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Lógica para mostrar o estado vazio apenas quando não estiver carregando */}
+              {filteredRestaurants.length === 0 && (
+                <div className="empty-state">
+                  <div className="empty-state-icon">
+                    <Search size={48} color="#9ca3af" />
                   </div>
-                  <p className="restaurant-description">{restaurant.description}</p>
-                  <div className="badges-container">
-                    {restaurant.badges.map((badge) => {
-                      const pref = dietaryPreferences.find(p => p.id === badge);
-                      return (
-                        <span key={badge} className="badge">
-                          {pref?.icon && (
-                            <span style={{ transform: 'scale(0.8)' }}>
-                              {pref.icon}
-                            </span>
-                          )}
-                          {pref?.label || badge}
-                        </span>
-                      );
-                    })}
-                  </div>
+                  <h3 className="empty-state-title">Nenhum restaurante encontrado</h3>
+                  <p className="empty-state-text">Tente ajustar sua busca ou suas preferências</p>
                 </div>
-              </div>
-            ))}
-          </div>
-          
-          {filteredRestaurants.length === 0 && (
-            <div className="empty-state">
-              <div className="empty-state-icon">
-                <Search size={48} color="#9ca3af" />
-              </div>
-              <h3 className="empty-state-title">No restaurants found</h3>
-              <p className="empty-state-text">Try adjusting your search or dietary preferences</p>
-            </div>
+              )}
+            </>
           )}
         </div>
       </main>
