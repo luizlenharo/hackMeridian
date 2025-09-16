@@ -8,4 +8,6 @@ python-dotenv
 sqlalchemy
 psycopg2-binary
 alembic
-pydantic-settings
+passlib[bcrypt]
+python-jose[cryptography]
+email-validator

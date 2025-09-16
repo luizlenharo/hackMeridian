@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from app.database import engine
 from app.models import database_models
-from app.routes import auditor, certification, restaurant
+from app.routes import auditor, auth, certification, restaurant, user
 
 # Criar tabelas no banco de dados
 database_models.Base.metadata.create_all(bind=engine)
@@ -31,6 +31,8 @@ app.include_router(
     certification.router, prefix="/api/certification", tags=["certification"]
 )
 app.include_router(auditor.router, prefix="/api/auditor", tags=["auditor"])
+app.include_router(user.router, prefix="/api/user", tags=["user"])
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 
 
 @app.get("/")
