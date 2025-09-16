@@ -1,0 +1,328 @@
+/* FoodDeliveryApp.css */
+
+.food-delivery-container {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.header {
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+}
+
+.location-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #16a34a;
+  font-family: "Epunda Slab", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.main {
+  width: 100%;
+  padding: 60px 5%;
+}
+
+.search-container {
+  position: relative;
+  margin-bottom: 80px;
+  max-width: 60%;
+  margin: 0 auto 80px auto;
+}
+
+.search-input {
+  width: 100%;
+  padding-left: 40px;
+  padding-right: 16px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 50px;
+  font-size: 18px;
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  border-color: #16a34a;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.preferences-section {
+  text-align: center;
+  margin-bottom: 100px;
+}
+
+.preferences-title {
+  font-size: 28px;
+  color: #374151;
+  margin-bottom: 50px;
+  font-weight: 600;
+}
+
+.preferences-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 24px;
+  max-width: 80%;
+  margin: 0 auto;
+}
+
+.preference-button {
+  padding: 32px 24px;
+  border-radius: 16px;
+  border: 2px solid;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  min-height: 140px;
+  justify-content: center;
+  color: #6b7280;
+}
+
+.preference-button.inactive {
+  border-color: #e5e7eb;
+  background-color: white;
+  color: #6b7280;
+}
+
+.preference-button.active {
+  border-color: #16a34a;
+  background-color: #f0fdf4;
+  color: #166534;
+}
+
+.preference-button.inactive:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.preference-icon {
+  transition: color 0.3s;
+}
+
+.preference-icon.inactive {
+  color: #6b7280;
+}
+
+.preference-icon.active {
+  color: #166534;
+}
+
+.restaurants-section {
+  margin-bottom: 32px;
+}
+
+.restaurants-title {
+  font-size: 42px;
+  font-weight: bold;
+  color: #111827;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.restaurants-subtitle {
+  color: #6b7280;
+  text-align: center;
+  margin-bottom: 60px;
+  font-size: 18px;
+}
+
+.restaurants-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  margin-bottom: 60px;
+  width: 100%;
+}
+
+.restaurant-card {
+  background-color: white;
+  border-radius: 20px;
+  border: 1px solid #f3f4f6;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  height: fit-content;
+}
+
+.restaurant-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.restaurant-image-fallback {
+  height: 250px;
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.rating-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: white;
+  padding: 4px 8px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.restaurant-content {
+  padding: 32px;
+}
+
+.restaurant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.restaurant-name {
+  font-size: 22px;
+  font-weight: bold;
+  color: #111827;
+}
+
+.delivery-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.restaurant-description {
+  color: #6b7280;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.badges-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  background-color: #dcfce7;
+  color: #166534;
+  gap: 4px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 0;
+}
+
+.empty-state-icon {
+  width: 96px;
+  height: 96px;
+  background-color: #f3f4f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.empty-state-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.empty-state-text {
+  color: #6b7280;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .preferences-grid {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 90%;
+  }
+  
+  .restaurants-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .preferences-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 95%;
+  }
+  
+  .restaurants-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .search-container {
+    max-width: 90%;
+  }
+  
+  .main {
+    padding: 40px 3%;
+  }
+}
