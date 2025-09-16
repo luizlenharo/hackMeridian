@@ -1,10 +1,6 @@
-<h1 align="center">🍔 Food For All - Hackathon Meridian 🍔</h1>
+<h1 align="center"> Food For All - Hackathon Meridian </h1>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/status-in%20progress-yellow" alt="Project Status">
-  <img src="https://img.shields.io/badge/license-MIT-blue" alt="License">
-  <img src="https://img.shields.io/github/last-commit/your-username/your-repo" alt="Last Commit">
-</p>
+
 
 ## 📖 Table of Contents
 - [Project Description](#-project-description)
@@ -17,7 +13,6 @@
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
 - [🎨 Usage & Demo](#-usage--demo)
-- [🤝 Contributing](#-contributing)
 - [📄 License](#-license)
 - [🏆 Acknowledgments](#-acknowledgments)
 - [👥 Our Team](#-our-team)
@@ -36,9 +31,7 @@ Finding safe and trustworthy food options is a daily challenge for millions of p
 
 ## ✨ Key Features
 - **User Profiles:** Create a profile specifying allergies, dietary restrictions (e.g., gluten-free, vegan), and religious requirements (e.g., Kosher, Halal).
-- **Verified Listings:** Search for restaurants and dishes with a "Blockchain Verified" seal of approval.
 - **Transparent History:** View the complete verification history of any item, including who the auditor was and when the verification occurred.
-- **Auditor Dashboard:** A dedicated portal for certified auditors to submit their findings to the blockchain.
 - **Immutable Trust:** Once a verification is on the blockchain, it cannot be altered or deleted.
 
 ## ⚙️ How It Works
@@ -47,14 +40,11 @@ Finding safe and trustworthy food options is a daily challenge for millions of p
 3.  **Record to Blockchain:** Upon successful verification, the auditor submits a signed report which is recorded as metadata on a Stellar transaction.
 4.  **User Confirmation:** The user scans a QR code or browses the app to view the dish's verification status, directly pulling the immutable data from the Stellar network.
 
-![Flowchart Placeholder](https://via.placeholder.com/800x300.png?text=Diagram+of+User/Restaurant/Auditor+Flow)
-*A diagram illustrating the workflow.*
-
 ## 🛠️ Tech Stack
 - **Blockchain:** [Stellar SDK](https://www.stellar.org/developers)
 - **Frontend:** [React](https://reactjs.org/).
-- **Backend:** [Python (FastAPI)](https://www.python.org/), etc.
-- **Database:** [PostgreSQL](https://www.postgresql.org/), [MongoDB](https://www.mongodb.com/), etc.
+- **Backend:** [Python (FastAPI)](https://www.python.org/)
+- **Database:** [PostgreSQL](https://www.postgresql.org/)
 - **Deployment:** 
 
 ## 🚀 Getting Started
@@ -70,5 +60,10 @@ Make sure you have the following installed on your machine:
 1. Clone the repo
    ```sh
    git clone [https://github.com/your-username/your-repo.git](https://github.com/your-username/your-repo.git)
+2. Run
+    ```sh
+    npm install
+    npm run dev
+
 
 
