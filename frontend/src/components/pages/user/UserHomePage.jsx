@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
-import { Search, MapPin, User, Wheat, Droplet, Leaf, Moon, Fish, Star, Clock } from 'lucide-react';
+import { Search, MapPin, User, Wheat, Droplet, Leaf, Moon, Fish, Star, Clock, ChevronDown, Settings, LogOut, Heart, ShoppingBag } from 'lucide-react';
+import './UserHomePage.css'; // CSS file needs to be created separately
 
 const UserHomePage = () => {
   const [selectedPreferences, setSelectedPreferences] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const dietaryPreferences = [
-    { id: 'gluten-free', label: 'Gluten-Free', icon: <Wheat className="w-5 h-5" /> },
-    { id: 'lactose-free', label: 'Lactose-Free', icon: <Droplet className="w-5 h-5" /> },
-    { id: 'vegan', label: 'Vegan', icon: <Leaf className="w-5 h-5" /> },
-    { id: 'halal', label: 'Halal', icon: <Moon className="w-5 h-5" /> },
-    { id: 'no-seafood', label: 'No Seafood', icon: <Fish className="w-5 h-5" /> },
-    { id: 'kosher', label: 'Kosher', icon: <Star className="w-5 h-5" /> }
+    { id: 'gluten-free', label: 'Gluten-Free', icon: <Wheat size={20} /> },
+    { id: 'lactose-free', label: 'Lactose-Free', icon: <Droplet size={20} /> },
+    { id: 'vegan', label: 'Vegan', icon: <Leaf size={20} /> },
+    { id: 'halal', label: 'Halal', icon: <Moon size={20} /> },
+    { id: 'no-seafood', label: 'No Seafood', icon: <Fish size={20} /> },
+    { id: 'kosher', label: 'Kosher', icon: <Star size={20} /> }
   ];
 
   const restaurants = [
@@ -63,34 +65,195 @@ const UserHomePage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="food-delivery-container" onClick={(e) => {
+      // Close user menu when clicking outside
+      if (!e.target.closest('.user-menu-container')) {
+        setShowUserMenu(false);
+      }
+    }}>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <MapPin className="w-5 h-5 text-gray-500" />
-              <span className="text-gray-600 text-sm">Your Location</span>
-            </div>
-            <h1 className="text-2xl font-bold text-green-600">Food for All</h1>
-            <div className="flex items-center space-x-2">
-              <User className="w-5 h-5 text-gray-500" />
-              <span className="text-gray-700 font-medium">John Doe</span>
-            </div>
+      <header className="header">
+        <div className="header-content">
+          <div className="location-section">
+            <MapPin size={20} />
+            <span>Your Location</span>
+          </div>
+          <h1 className="logo">Food for All</h1>
+          <div style={{ position: 'relative' }} className="user-menu-container">
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 16px',
+                backgroundColor: 'transparent',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                color: '#374151',
+                fontWeight: '500',
+                fontSize: '14px',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = '#f9fafb';
+                e.target.style.borderColor = '#d1d5db';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.borderColor = '#e5e7eb';
+              }}
+            >
+              <User size={18} />
+              <span>John Doe</span>
+              <ChevronDown size={16} />
+            </button>
+            
+            {showUserMenu && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: '0',
+                  marginTop: '8px',
+                  backgroundColor: 'white',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px',
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                  minWidth: '200px',
+                  zIndex: 1000
+                }}
+              >
+                <div style={{ padding: '12px 16px', borderBottom: '1px solid #f3f4f6' }}>
+                  <div style={{ fontWeight: '600', color: '#111827', fontSize: '14px' }}>John Doe</div>
+                  <div style={{ color: '#6b7280', fontSize: '12px' }}>john.doe@email.com</div>
+                </div>
+                
+                <div style={{ padding: '8px 0' }}>
+                  <button
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      color: '#374151',
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                  >
+                    <User size={16} />
+                    <span>My Profile</span>
+                  </button>
+                  
+                  <button
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      color: '#374151',
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                  >
+                    <ShoppingBag size={16} />
+                    <span>My Orders</span>
+                  </button>
+                  
+                  <button
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      color: '#374151',
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                  >
+                    <Heart size={16} />
+                    <span>Favorites</span>
+                  </button>
+                  
+                  <button
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      color: '#374151',
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                  >
+                    <Settings size={16} />
+                    <span>Settings</span>
+                  </button>
+                </div>
+                
+                <div style={{ borderTop: '1px solid #f3f4f6', padding: '8px 0' }}>
+                  <button
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      color: '#dc2626',
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#fef2f2'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                  >
+                    <LogOut size={16} />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="main">
         {/* Search Bar */}
-        <div className="relative mb-12">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" />
+        <div className="search-container">
+          <div className="search-icon">
+            <Search size={20} />
           </div>
           <input
             type="text"
-            className="w-full pl-10 pr-4 py-4 border border-gray-200 rounded-full text-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="search-input"
             placeholder="Search restaurants or dishes..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -98,69 +261,61 @@ const UserHomePage = () => {
         </div>
 
         {/* Dietary Preferences */}
-        <div className="text-center mb-12">
-          <h2 className="text-xl text-gray-700 mb-8">Choose your dietary preferences</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
-            {dietaryPreferences.map((pref) => (
-              <button
-                key={pref.id}
-                onClick={() => togglePreference(pref.id)}
-                className={`p-6 rounded-xl border transition-all duration-200 hover:shadow-md ${
-                  selectedPreferences.includes(pref.id)
-                    ? 'border-green-500 bg-green-50 text-green-700'
-                    : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex flex-col items-center space-y-3">
-                  {pref.icon}
-                  <span className="font-medium text-sm">{pref.label}</span>
-                </div>
-              </button>
-            ))}
+        <div className="preferences-section">
+          <h2 className="preferences-title">Choose your dietary preferences</h2>
+          <div className="preferences-grid">
+            {dietaryPreferences.map((pref) => {
+              const isSelected = selectedPreferences.includes(pref.id);
+              return (
+                <button
+                  key={pref.id}
+                  onClick={() => togglePreference(pref.id)}
+                  className={`preference-button ${isSelected ? 'active' : 'inactive'}`}
+                >
+                  <div className={`preference-icon ${isSelected ? 'active' : 'inactive'}`}>
+                    {pref.icon}
+                  </div>
+                  <span>{pref.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Restaurant Section */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-4">Perfect restaurants for you</h2>
-          <p className="text-gray-600 text-center mb-8">Curated based on popular dietary-friendly options</p>
+        <div className="restaurants-section">
+          <h2 className="restaurants-title">Perfect restaurants for you</h2>
+          <p className="restaurants-subtitle">Curated based on popular dietary-friendly options</p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="restaurants-grid">
             {filteredRestaurants.map((restaurant) => (
-              <div key={restaurant.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200">
-                <div className="h-48 bg-gradient-to-br from-green-100 to-green-200 relative overflow-hidden">
-                  <img 
-                    src={restaurant.image} 
-                    alt={restaurant.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextElementSibling.style.display = 'flex';
-                    }}
-                  />
-                  <div className="w-full h-full bg-gradient-to-br from-green-100 to-green-200 hidden items-center justify-center">
-                    <Leaf className="w-12 h-12 text-green-500" />
-                  </div>
-                  <div className="absolute top-3 right-3 bg-white px-2 py-1 rounded-full flex items-center space-x-1">
-                    <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <span className="text-sm font-semibold">{restaurant.rating}</span>
+              <div key={restaurant.id} className="restaurant-card">
+                <div className="restaurant-image-fallback">
+                  <Leaf size={48} color="#16a34a" />
+                  <div className="rating-badge">
+                    <Star size={16} color="#fbbf24" fill="#fbbf24" />
+                    <span>{restaurant.rating}</span>
                   </div>
                 </div>
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-bold text-lg text-gray-900">{restaurant.name}</h3>
-                    <div className="flex items-center text-gray-500 text-sm">
-                      <Clock className="w-4 h-4 mr-1" />
+                <div className="restaurant-content">
+                  <div className="restaurant-header">
+                    <h3 className="restaurant-name">{restaurant.name}</h3>
+                    <div className="delivery-time">
+                      <Clock size={16} />
                       {restaurant.deliveryTime}
                     </div>
                   </div>
-                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">{restaurant.description}</p>
-                  <div className="flex flex-wrap gap-2">
+                  <p className="restaurant-description">{restaurant.description}</p>
+                  <div className="badges-container">
                     {restaurant.badges.map((badge) => {
                       const pref = dietaryPreferences.find(p => p.id === badge);
                       return (
-                        <span key={badge} className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-green-100 text-green-700">
-                          {pref?.icon && <span className="mr-1 scale-75">{pref.icon}</span>}
+                        <span key={badge} className="badge">
+                          {pref?.icon && (
+                            <span style={{ transform: 'scale(0.8)' }}>
+                              {pref.icon}
+                            </span>
+                          )}
                           {pref?.label || badge}
                         </span>
                       );
@@ -172,12 +327,12 @@ const UserHomePage = () => {
           </div>
           
           {filteredRestaurants.length === 0 && (
-            <div className="text-center py-12">
-              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Search className="w-12 h-12 text-gray-400" />
+            <div className="empty-state">
+              <div className="empty-state-icon">
+                <Search size={48} color="#9ca3af" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No restaurants found</h3>
-              <p className="text-gray-600">Try adjusting your search or dietary preferences</p>
+              <h3 className="empty-state-title">No restaurants found</h3>
+              <p className="empty-state-text">Try adjusting your search or dietary preferences</p>
             </div>
           )}
         </div>

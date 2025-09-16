@@ -16,7 +16,7 @@ import LoginRestaurant from './components/pages/login/LoginRestaurant.jsx';
 const router = createBrowserRouter([
   {
     path: "/", // A rota raiz agora será a página de login
-    element: <HomePage />,
+    element: <App />,
   },
   {
     path: "/cadastro", // A rota para a nova página
