@@ -8,7 +8,10 @@ import LoginPage from './components/pages/login/Login.jsx';
 import RegisterPage from './components/register/RegisterPage.jsx';
 
 import './index.css';
+import UserHomePage from './components/pages/user/UserHomePage.jsx';
 import ResgisterRestaurant from './components/register/RegisterRestaurant.jsx';
+import LoginRestaurant from './components/pages/login/LoginRestaurant.jsx';
+import RestaurantPage from './components/pages/restaurant/RestaurantPage.jsx';
 
 // 2. Crie a configuração das suas rotas
 const router = createBrowserRouter([
@@ -25,6 +28,14 @@ const router = createBrowserRouter([
     path: "cadastro-restaurante",
     element: <ResgisterRestaurant/>,
   },
+  {
+    path: "restaurant/:id",
+    element: <RestaurantPage/>,
+  },
+  {
+    path: "user-home",
+    element: <UserHomePage />,
+  }
 ]);
 
 // 3. Mude o render para usar o RouterProvider
