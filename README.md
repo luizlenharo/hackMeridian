@@ -21,7 +21,7 @@
 This project aims to build a secure food ordering environment for people with dietary, allergic, or religious eating restrictions. 
 To guarantee the safety of the users, we used the **Stellar Blockchain** technology to assure the immutability and transparency of the verifications made by verified auditors.
 
-**Live Demo:** [Link to Deployed App](https://your-demo-link.com) (if available)
+**Live Demo:** [Link to Deployed App](https://food4all-zwee.onrender.com/) (if available)
 
 ## 🎯 The Problem
 Finding safe and trustworthy food options is a daily challenge for millions of people with specific dietary needs. Whether due to severe allergies, religious laws (like Halal or Kosher), or lifestyle choices (like veganism), the risk of cross-contamination or misinformation can have serious consequences. There is often a lack of a single source of truth to verify a restaurant's claims.
