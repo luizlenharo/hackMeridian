@@ -2,6 +2,7 @@ fastapi
 uvicorn[standard]
 stellar-sdk
 pydantic
+pydantic-settings
 python-multipart
 requests
 python-dotenv
