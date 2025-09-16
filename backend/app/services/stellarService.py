@@ -43,9 +43,11 @@ class StellarService:
             trustlines_setup = self.setup_all_trustlines(secret_key)
             
             if not trustlines_setup["success"]:
-                logger.warning(f"Não foi possível configurar todas as trustlines: {trustlines_setup.get('error')}")
-                # Continuar mesmo se não conseguir configurar todas as trustlines
-            
+                logger.error(f"Não foi possível configurar todas as trustlines: {trustlines_setup.get('error')}")
+                return {
+                    "success": False,
+                    "error": f"Não foi possível configurar todas as trustlines: {trustlines_setup.get('error')}"
+                }
             return {
                 "success": True,
                 "public_key": public_key,
