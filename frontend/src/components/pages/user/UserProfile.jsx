@@ -11,7 +11,7 @@ const UserProfile = () => {
     email: "joao.silva@email.com",
     phone: "(11) 99999-9999",
     address: "Rua das Flores, 456 - Centro, São Paulo - SP",
-    avatar: "https://via.placeholder.com/120x120/22c55e/ffffff?text=JS",
+    avatar: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=120&h=120&fit=crop&crop=faces&auto=format&q=80",
     memberSince: "Janeiro 2024",
     totalOrders: 24,
     favoriteRestaurants: 8
@@ -30,7 +30,7 @@ const UserProfile = () => {
     {
       id: 1,
       restaurant: "Green Garden",
-      restaurantLogo: "https://via.placeholder.com/50x50/22c55e/ffffff?text=GG",
+      restaurantLogo: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=50&h=50&fit=crop&auto=format&q=80",
       date: "15 Set 2025",
       total: "R$ 45,80",
       status: "Entregue",
@@ -39,7 +39,7 @@ const UserProfile = () => {
     {
       id: 2,
       restaurant: "Vegan Paradise",
-      restaurantLogo: "https://via.placeholder.com/50x50/10b981/ffffff?text=VP",
+      restaurantLogo: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=50&h=50&fit=crop&auto=format&q=80",
       date: "12 Set 2025",
       total: "R$ 38,90",
       status: "Entregue",
@@ -48,7 +48,7 @@ const UserProfile = () => {
     {
       id: 3,
       restaurant: "Healthy Bowl",
-      restaurantLogo: "https://via.placeholder.com/50x50/059669/ffffff?text=HB",
+      restaurantLogo: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=50&h=50&fit=crop&auto=format&q=80",
       date: "08 Set 2025",
       total: "R$ 52,30",
       status: "Entregue",
@@ -60,21 +60,21 @@ const UserProfile = () => {
     {
       id: 1,
       name: "Green Garden",
-      logo: "https://via.placeholder.com/60x60/22c55e/ffffff?text=GG",
+      logo: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=60&h=60&fit=crop&auto=format&q=80",
       rating: 4.8,
       cuisine: "Vegetariana"
     },
     {
       id: 2,
       name: "Vegan Paradise",
-      logo: "https://via.placeholder.com/60x60/10b981/ffffff?text=VP",
+      logo: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=60&h=60&fit=crop&auto=format&q=80",
       rating: 4.6,
       cuisine: "Vegana"
     },
     {
       id: 3,
       name: "Healthy Bowl",
-      logo: "https://via.placeholder.com/60x60/059669/ffffff?text=HB",
+      logo: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=60&h=60&fit=crop&auto=format&q=80",
       rating: 4.7,
       cuisine: "Saudável"
     }
@@ -137,7 +137,7 @@ const UserProfile = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="profile-navigation">
+      <nav className="profile-navigation">
         <button 
           className={`nav-tab ${activeTab === 'profile' ? 'active' : ''}`}
           onClick={() => setActiveTab('profile')}
@@ -150,20 +150,19 @@ const UserProfile = () => {
         >
           Pedidos
         </button>
-
         <button 
           className={`nav-tab ${activeTab === 'preferences' ? 'active' : ''}`}
           onClick={() => setActiveTab('preferences')}
         >
           Preferências
         </button>
-      </div>
+      </nav>
 
       {/* Main Content */}
       <main className="profile-content">
         {/* Profile Tab */}
         {activeTab === 'profile' && (
-          <div className="profile-section">
+          <section className="profile-section">
             <div className="section-header">
               <h3 className="section-title">Informações Pessoais</h3>
               <button 
@@ -176,8 +175,9 @@ const UserProfile = () => {
             
             <div className="profile-form">
               <div className="form-group">
-                <label>Nome Completo</label>
+                <label htmlFor="fullName">Nome Completo</label>
                 <input 
+                  id="fullName"
                   type="text" 
                   value={userData.name}
                   disabled={!editMode}
@@ -186,8 +186,9 @@ const UserProfile = () => {
               </div>
               
               <div className="form-group">
-                <label>Email</label>
+                <label htmlFor="email">Email</label>
                 <input 
+                  id="email"
                   type="email" 
                   value={userData.email}
                   disabled={!editMode}
@@ -196,8 +197,9 @@ const UserProfile = () => {
               </div>
               
               <div className="form-group">
-                <label>Telefone</label>
+                <label htmlFor="phone">Telefone</label>
                 <input 
+                  id="phone"
                   type="tel" 
                   value={userData.phone}
                   disabled={!editMode}
@@ -206,8 +208,9 @@ const UserProfile = () => {
               </div>
               
               <div className="form-group">
-                <label>Endereço</label>
+                <label htmlFor="address">Endereço</label>
                 <textarea 
+                  id="address"
                   value={userData.address}
                   disabled={!editMode}
                   rows="2"
@@ -221,17 +224,17 @@ const UserProfile = () => {
                 </button>
               )}
             </div>
-          </div>
+          </section>
         )}
 
         {/* Orders Tab */}
         {activeTab === 'orders' && (
-          <div className="orders-section">
+          <section className="orders-section">
             <h3 className="section-title">Histórico de Pedidos</h3>
             <div className="orders-list">
               {recentOrders.map((order) => (
                 <div key={order.id} className="order-card">
-                  <img src={order.restaurantLogo} alt="Restaurant" className="order-restaurant-logo" />
+                  <img src={order.restaurantLogo} alt={order.restaurant} className="order-restaurant-logo" />
                   <div className="order-info">
                     <div className="order-header">
                       <h4 className="order-restaurant">{order.restaurant}</h4>
@@ -247,14 +250,12 @@ const UserProfile = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </section>
         )}
-
-
 
         {/* Preferences Tab */}
         {activeTab === 'preferences' && (
-          <div className="preferences-section">
+          <section className="preferences-section">
             <h3 className="section-title">Preferências Dietárias</h3>
             <p className="preferences-subtitle">Selecione suas preferências para receber recomendações personalizadas</p>
             
@@ -267,18 +268,23 @@ const UserProfile = () => {
                 >
                   <span className="preference-icon">{pref.icon}</span>
                   <span className="preference-name">{pref.name}</span>
-                  <button
-                    type="button"
-                    className={`toggle-switch${pref.active ? ' on' : ''}`}
-                    onClick={() => togglePreference(pref.id)}
-                    aria-pressed={pref.active}
-                  >
-                    <span className="toggle-handle" />
-                  </button>
+                  <div className="preference-toggle">
+                    <button
+                      type="button"
+                      className={`toggle-switch${pref.active ? ' on' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        togglePreference(pref.id);
+                      }}
+                      aria-pressed={pref.active}
+                    >
+                      <span className="toggle-handle" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
+          </section>
         )}
       </main>
     </div>

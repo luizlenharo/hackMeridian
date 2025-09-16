@@ -1,4 +1,3 @@
-
 .restaurant-page {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   background-color: #f9fafb;
@@ -18,8 +17,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0;
+  padding: 1rem 2rem;
   margin: 0;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .location {
@@ -34,11 +35,15 @@
   font-size: 1rem;
 }
 
-.app-title {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #22c55e;
-  font-style: italic;
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.safebite-logo {
+  height: 40px;
+  object-fit: contain;
 }
 
 .user-menu {
@@ -55,7 +60,7 @@
 }
 
 .cover-image {
-  width: 100vw;
+  width: 100%;
   height: 100%;
   object-fit: cover;
 }
@@ -74,6 +79,7 @@
   align-items: end;
   gap: 1.5rem;
   margin: 0 auto;
+  max-width: 1400px;
 }
 
 .restaurant-logo {
@@ -124,9 +130,21 @@
   font-weight: 500;
 }
 
+.no-certifications {
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 0.8rem;
+}
+
 /* Main Content */
 .main-content {
   margin: 0 auto;
+  padding: 2rem;
+  max-width: 1400px;
 }
 
 .product-section {
@@ -286,8 +304,8 @@
     padding: 1rem;
   }
 
-  .app-title {
-    font-size: 1.5rem;
+  .safebite-logo {
+    height: 32px;
   }
 
   .location, .user-menu {
@@ -352,4 +370,3 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
-
