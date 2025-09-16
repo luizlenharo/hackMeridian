@@ -19,7 +19,7 @@ stellar_service = StellarService()
 async def register_auditor(auditor: AuditorCreate, db: Session = Depends(get_db)):
     """Registra um novo auditor na plataforma"""
     try:
-        logger.info("Recieve request to create a new auditor")
+        logger.info("Receive request to create a new auditor")
         stellar_wallet_info = stellar_service.create_new_wallet()
 
         if not stellar_wallet_info["success"]:
