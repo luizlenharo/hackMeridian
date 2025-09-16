@@ -29,27 +29,76 @@ class StellarService:
             keypair = Keypair.random()
             public_key = keypair.public_key
             secret_key = keypair.secret
-            
+
             # Financiar a conta no testnet
             funded = self.create_test_account(public_key)
-            
-            if funded:
-                return {
-                    "success": True,
-                    "public_key": public_key,
-                    "secret_key": secret_key,
-                }
-            else:
+
+            if not funded:
                 return {
                     "success": False,
-                    "error": "Não foi possível financiar a conta no testnet"
+                    "error": "Não foi possível financiar a conta no testnet",
                 }
+                
+            # Configurar trustlines para todos os tipos de certificação
+            trustlines_setup = self.setup_all_trustlines(secret_key)
+            
+            if not trustlines_setup["success"]:
+                logger.warning(f"Não foi possível configurar todas as trustlines: {trustlines_setup.get('error')}")
+                # Continuar mesmo se não conseguir configurar todas as trustlines
+            
+            return {
+                "success": True,
+                "public_key": public_key,
+                "secret_key": secret_key,
+                "trustlines": trustlines_setup.get("trustlines", [])
+            }
         except Exception as e:
             logger.error(f"Erro ao criar nova carteira: {e}")
+            return {"success": False, "error": str(e)}
+
+    def setup_all_trustlines(self, account_secret_key):
+        """Configura trustlines para todos os tipos de certificação"""
+        try:
+            if not self.issuer_keypair:
+                return {"success": False, "error": "Chave privada do emissor não configurada"}
+                
+            # Carregar a conta
+            user_keypair = Keypair.from_secret(account_secret_key)
+            user_account = self.server.load_account(user_keypair.public_key)
+            
+            # Criar uma transação para configurar todas as trustlines de uma vez
+            transaction_builder = TransactionBuilder(
+                source_account=user_account,
+                network_passphrase=self.network_passphrase,
+                base_fee=100,
+            )
+            
+            # Adicionar operações de trustline para cada tipo de certificação
+            trustlines_added = []
+            for cert_type, asset_code in CERTIFICATION_ASSETS.items():
+                certification_asset = Asset(asset_code, self.issuer_keypair.public_key)
+                transaction_builder.append_change_trust_op(
+                    asset=certification_asset,
+                    limit="1000",  # Limite de tokens que pode receber
+                )
+                trustlines_added.append(asset_code)
+                
+            # Construir e assinar a transação
+            transaction = transaction_builder.set_timeout(30).build()
+            transaction.sign(user_keypair)
+            
+            # Enviar a transação
+            response = self.server.submit_transaction(transaction)
+            
             return {
-                "success": False,
-                "error": str(e)
+                "success": True,
+                "transaction_hash": response["hash"],
+                "trustlines": trustlines_added
             }
+            
+        except Exception as e:
+            logger.error(f"Erro ao configurar trustlines: {e}")
+            return {"success": False, "error": str(e)}
 
     def create_test_account(self, public_key: str):
         """Cria conta de teste para o testnet"""
@@ -96,6 +145,24 @@ class StellarService:
             asset_code = CERTIFICATION_ASSETS.get(certification_type)
             if not asset_code:
                 raise ValueError(f"Tipo de certificação inválido: {certification_type}")
+
+            # Verificar se o restaurante tem trustline para este asset
+            has_trustline = False
+            for balance in restaurant_account.get("balances", []):
+                if balance.get("asset_type") != "native":
+                    if (balance.get("asset_code") == asset_code and 
+                        balance.get("asset_issuer") == self.issuer_keypair.public_key):
+                        has_trustline = True
+                        break
+            
+            # Se não tiver trustline, retornar erro informativo
+            if not has_trustline:
+                logger.warning(f"Restaurante não possui trustline para {asset_code}")
+                return {
+                    "success": False, 
+                    "error": f"O restaurante não possui uma trustline para o token {asset_code}. " +
+                             "É necessário configurar uma trustline antes de receber o token."
+                }
 
             certification_asset = Asset(asset_code, self.issuer_keypair.public_key)
 

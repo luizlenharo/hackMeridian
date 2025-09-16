@@ -1,10 +1,8 @@
 from datetime import datetime
 
-from sqlalchemy import (Boolean, Column, DateTime, ForeignKey, Integer, String,
-                        Text)
-from sqlalchemy.orm import relationship
-
 from app.database import Base
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import relationship
 
 
 class Restaurant(Base):
@@ -47,7 +45,6 @@ class Auditor(Base):
     name = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, nullable=False)
     specializations = Column(Text, nullable=False)  # Lista em formato JSON
-    credentials = Column(Text, nullable=False)
     stellar_public_key = Column(String(56), unique=True, nullable=False)
     is_active = Column(Boolean, default=True)
     certifications_issued = Column(Integer, default=0)
@@ -55,3 +52,4 @@ class Auditor(Base):
 
     # Relacionamentos
     certifications = relationship("Certification", back_populates="auditor")
+

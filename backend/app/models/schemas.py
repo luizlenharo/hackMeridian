@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -31,15 +31,15 @@ class Restaurant(BaseModel):
     address: str
     stellar_public_key: str
     created_at: datetime
-    certifications: List[dict] = []
+    certifications: list[dict] = []
 
 
 # Certification Models
 class CertificationRequest(BaseModel):
     restaurant_id: int
     certification_type: CertificationType
-    products: List[str] = Field(..., min_items=1)
-    documentation: Optional[List[str]] = []
+    products: list[str] = Field(..., min_items=1)
+    documentation: Optional[list[str]] = []
     notes: Optional[str] = Field(None, max_length=500)
 
 
@@ -47,7 +47,7 @@ class Certification(BaseModel):
     id: int
     restaurant_id: int
     certification_type: CertificationType
-    products: List[str]
+    products: list[str]
     status: CertificationStatus
     auditor_id: Optional[str]
     issued_at: Optional[datetime]
@@ -60,18 +60,15 @@ class Certification(BaseModel):
 # Auditor Models
 class AuditorCreate(BaseModel):
     name: str = Field(..., min_length=2, max_length=100)
-    email: str = Field(..., pattern=r"^[\w\.-]+@[\w\.-]+\.\w+$")
-    specializations: List[CertificationType]
-    credentials: str = Field(..., min_length=10, max_length=500)
-    stellar_public_key: str = Field(..., min_length=56, max_length=56)
+    email: str
+    specializations: list[CertificationType]
 
 
 class Auditor(BaseModel):
     id: int
     name: str
     email: str
-    specializations: List[CertificationType]
-    credentials: str
+    specializations: list[CertificationType]
     stellar_public_key: str
     is_active: bool
     certifications_issued: int
@@ -92,7 +89,7 @@ class APIResponse(BaseModel):
 
 
 class PaginatedResponse(BaseModel):
-    items: List[dict]
+    items: list[dict]
     total: int
     page: int
     size: int
@@ -103,6 +100,6 @@ class PaginatedResponse(BaseModel):
 class RestaurantFilter(BaseModel):
     name: Optional[str] = None
     address: Optional[str] = None
-    certifications: Optional[List[CertificationType]] = None
+    certifications: Optional[list[CertificationType]] = None
     page: int = Field(1, ge=1)
     size: int = Field(10, ge=1, le=100)

@@ -26,6 +26,7 @@ async def register_restaurant(
     """Registra um novo restaurante na plataforma"""
     try:
         # Criar uma nova carteira Stellar para o restaurante
+        logger.info(f"Criando nova carteira Stellar para o restaurante: {restaurant.name}")
         stellar_wallet_info = stellar_service.create_new_wallet()
 
         if not stellar_wallet_info["success"]:
@@ -35,6 +36,13 @@ async def register_restaurant(
             )
 
         stellar_public_key = stellar_wallet_info["public_key"]
+        
+        # Verificar se as trustlines foram configuradas
+        trustlines = stellar_wallet_info.get("trustlines", [])
+        if trustlines:
+            logger.info(f"Trustlines configuradas com sucesso: {', '.join(trustlines)}")
+        else:
+            logger.warning("Nenhuma trustline foi configurada durante a criação da carteira")
 
         # Criar novo restaurante no banco de dados
         new_restaurant = database_models.Restaurant(
@@ -51,17 +59,17 @@ async def register_restaurant(
         # Preparar resposta
         response_data = {"restaurant_id": new_restaurant.id}
 
-        # Incluir informações da carteira criada, se aplicável
-        if stellar_wallet_info:
-            response_data["wallet"] = {
-                "public_key": stellar_wallet_info["public_key"],
-                "secret_key": stellar_wallet_info["secret_key"],
-                "message": "IMPORTANTE: Guarde a chave secreta em um local seguro. Ela não será mostrada novamente.",
-            }
+        # Incluir informações da carteira criada
+        response_data["wallet"] = {
+            "public_key": stellar_wallet_info["public_key"],
+            "secret_key": stellar_wallet_info["secret_key"],
+            "trustlines_configured": trustlines,
+            "message": "IMPORTANTE: Guarde a chave secreta em um local seguro. Ela não será mostrada novamente."
+        }
 
         return APIResponse(
             success=True,
-            message="Restaurante registrado com sucesso",
+            message="Restaurante registrado com sucesso e trustlines configuradas",
             data=response_data,
         )
 

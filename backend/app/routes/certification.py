@@ -193,6 +193,7 @@ async def approve_certification(
             "auditor_id": auditor_id,
         }
 
+        logger.info(f"Emitindo token de certificação para o restaurante {restaurant.name} (ID: {restaurant.id})")
         result = stellar_service.issue_certification_token(
             restaurant.stellar_public_key,
             certification.certification_type,
@@ -200,10 +201,22 @@ async def approve_certification(
         )
 
         if not result["success"]:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Erro ao emitir certificação: {result.get('error', 'Erro desconhecido')}",
-            )
+            error_msg = result.get('error', 'Erro desconhecido')
+            
+            # Se o erro for relacionado à trustline, fornecer uma mensagem mais clara
+            if "op_no_trust" in error_msg or "trustline" in error_msg.lower():
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        f"O restaurante não possui uma trustline para receber o token de certificação. "
+                        f"Isso é inesperado, pois as trustlines deveriam ter sido configuradas durante o cadastro do restaurante."
+                    ),
+                )
+            else:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Erro ao emitir certificação: {error_msg}",
+                )
 
         # Atualizar certificação
         certification.status = CertificationStatus.APPROVED
