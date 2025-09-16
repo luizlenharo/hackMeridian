@@ -19,38 +19,38 @@ stellar_service = StellarService()
 async def register_auditor(auditor: AuditorCreate, db: Session = Depends(get_db)):
     """Registra um novo auditor na plataforma"""
     try:
-        # Validar chave pública Stellar
-        if not stellar_service.validate_stellar_address(auditor.stellar_public_key):
-            raise HTTPException(status_code=400, detail="Endereço Stellar inválido")
+        logger.info("Receive request to create a new auditor")
+        stellar_wallet_info = stellar_service.create_new_wallet()
 
-        # Verificar se email já existe
-        existing_email = db.query(database_models.Auditor).filter(
-            database_models.Auditor.email == auditor.email
-        ).first()
-        
+        if not stellar_wallet_info["success"]:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to create Stellar wallet: {stellar_wallet_info.get('error', 'Erro desconhecido')}",
+            )
+
+        stellar_public_key = stellar_wallet_info["public_key"]
+
+        existing_email = (
+            db.query(database_models.Auditor)
+            .filter(database_models.Auditor.email == auditor.email)
+            .first()
+        )
+
         if existing_email:
             raise HTTPException(status_code=400, detail="Email já cadastrado")
-            
-        # Verificar se chave Stellar já existe
-        existing_key = db.query(database_models.Auditor).filter(
-            database_models.Auditor.stellar_public_key == auditor.stellar_public_key
-        ).first()
-        
-        if existing_key:
-            raise HTTPException(status_code=400, detail="Endereço Stellar já cadastrado")
 
-        # Criar novo auditor
         new_auditor = database_models.Auditor(
             name=auditor.name,
             email=auditor.email,
-            specializations=json.dumps(auditor.specializations),  # Converter lista para JSON
-            credentials=auditor.credentials,
-            stellar_public_key=auditor.stellar_public_key,
+            specializations=json.dumps(
+                auditor.specializations
+            ),  # Converter lista para JSON
+            stellar_public_key=stellar_public_key,
             is_active=True,  # Por simplicidade, aprovamos automaticamente
             certifications_issued=0,
-            created_at=datetime.now()
+            created_at=datetime.now(),
         )
-        
+
         db.add(new_auditor)
         db.commit()
         db.refresh(new_auditor)
@@ -77,24 +77,27 @@ async def list_auditors(db: Session = Depends(get_db)):
     """Lista todos os auditores ativos"""
     try:
         # Buscar auditores ativos
-        active_auditors_query = db.query(database_models.Auditor).filter(
-            database_models.Auditor.is_active == True
-        ).all()
-        
+        active_auditors_query = (
+            db.query(database_models.Auditor)
+            .filter(database_models.Auditor.is_active == True)
+            .all()
+        )
+
         # Converter para lista de dicionários
         active_auditors = []
         for auditor in active_auditors_query:
-            active_auditors.append({
-                "id": auditor.id,
-                "name": auditor.name,
-                "email": auditor.email,
-                "specializations": json.loads(auditor.specializations),
-                "credentials": auditor.credentials,
-                "stellar_public_key": auditor.stellar_public_key,
-                "is_active": auditor.is_active,
-                "certifications_issued": auditor.certifications_issued,
-                "created_at": auditor.created_at.isoformat()
-            })
+            active_auditors.append(
+                {
+                    "id": auditor.id,
+                    "name": auditor.name,
+                    "email": auditor.email,
+                    "specializations": json.loads(auditor.specializations),
+                    "stellar_public_key": auditor.stellar_public_key,
+                    "is_active": auditor.is_active,
+                    "certifications_issued": auditor.certifications_issued,
+                    "created_at": auditor.created_at.isoformat(),
+                }
+            )
 
         return APIResponse(
             success=True,
@@ -112,10 +115,12 @@ async def get_auditor(auditor_id: int, db: Session = Depends(get_db)):
     """Obtém detalhes de um auditor específico"""
     try:
         # Buscar auditor
-        auditor = db.query(database_models.Auditor).filter(
-            database_models.Auditor.id == auditor_id
-        ).first()
-        
+        auditor = (
+            db.query(database_models.Auditor)
+            .filter(database_models.Auditor.id == auditor_id)
+            .first()
+        )
+
         if not auditor:
             raise HTTPException(status_code=404, detail="Auditor não encontrado")
 
@@ -125,14 +130,15 @@ async def get_auditor(auditor_id: int, db: Session = Depends(get_db)):
             "name": auditor.name,
             "email": auditor.email,
             "specializations": json.loads(auditor.specializations),
-            "credentials": auditor.credentials,
             "stellar_public_key": auditor.stellar_public_key,
             "is_active": auditor.is_active,
             "certifications_issued": auditor.certifications_issued,
-            "created_at": auditor.created_at.isoformat()
+            "created_at": auditor.created_at.isoformat(),
         }
 
-        return APIResponse(success=True, message="Auditor encontrado", data=auditor_dict)
+        return APIResponse(
+            success=True, message="Auditor encontrado", data=auditor_dict
+        )
 
     except HTTPException:
         raise
@@ -146,10 +152,12 @@ async def deactivate_auditor(auditor_id: int, db: Session = Depends(get_db)):
     """Desativa um auditor"""
     try:
         # Buscar auditor
-        auditor = db.query(database_models.Auditor).filter(
-            database_models.Auditor.id == auditor_id
-        ).first()
-        
+        auditor = (
+            db.query(database_models.Auditor)
+            .filter(database_models.Auditor.id == auditor_id)
+            .first()
+        )
+
         if not auditor:
             raise HTTPException(status_code=404, detail="Auditor não encontrado")
 
@@ -172,10 +180,12 @@ async def activate_auditor(auditor_id: int, db: Session = Depends(get_db)):
     """Reativa um auditor"""
     try:
         # Buscar auditor
-        auditor = db.query(database_models.Auditor).filter(
-            database_models.Auditor.id == auditor_id
-        ).first()
-        
+        auditor = (
+            db.query(database_models.Auditor)
+            .filter(database_models.Auditor.id == auditor_id)
+            .first()
+        )
+
         if not auditor:
             raise HTTPException(status_code=404, detail="Auditor não encontrado")
 
@@ -198,10 +208,12 @@ async def get_auditor_stats(auditor_id: int, db: Session = Depends(get_db)):
     """Obtém estatísticas de um auditor"""
     try:
         # Buscar auditor
-        auditor = db.query(database_models.Auditor).filter(
-            database_models.Auditor.id == auditor_id
-        ).first()
-        
+        auditor = (
+            db.query(database_models.Auditor)
+            .filter(database_models.Auditor.id == auditor_id)
+            .first()
+        )
+
         if not auditor:
             raise HTTPException(status_code=404, detail="Auditor não encontrado")
 
@@ -223,3 +235,4 @@ async def get_auditor_stats(auditor_id: int, db: Session = Depends(get_db)):
     except Exception as e:
         logger.error(f"Erro ao obter estatísticas do auditor: {e}")
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
