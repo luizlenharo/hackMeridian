@@ -16,16 +16,16 @@ function HomePage() {
         <div className="button-group">
           <button
             className="choice-button"
-            onClick={() => navigate("/cadastro")}
+            onClick={() => navigate("/login")}
           >
-            Register as Client
+            Login as Client
           </button>
 
           <button
             className="choice-button"
-            onClick={() => navigate("/cadastro-restaurante")}
+            onClick={() => navigate("/login-restaurante")}
           >
-            Register as Restaurant
+            Login as Restaurant
           </button>
         </div>
       </div>
