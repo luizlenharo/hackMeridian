@@ -110,7 +110,6 @@ async def register_user(user: UserCreate, db: Session = Depends(get_db)):
         # Incluir informações da carteira criada
         response_data["wallet"] = {
             "public_key": stellar_wallet_info["public_key"],
-            "secret_key": stellar_wallet_info["secret_key"],
             "trustlines_configured": trustlines,
             "message": "IMPORTANTE: Guarde a chave secreta em um local seguro. Ela não será mostrada novamente."
         }
