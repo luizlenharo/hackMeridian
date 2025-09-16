@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, MapPin, User, Wheat, Droplet, Leaf, Moon, Fish, Star, Clock, ChevronDown, Settings, LogOut, Heart, ShoppingBag } from 'lucide-react';
+import { Search, MapPin, User, Wheat, Droplet, Leaf, Moon, Fish, Star,  ChevronDown, Settings, LogOut, Heart, ShoppingBag } from 'lucide-react';
 import './UserHomePage.css'; // CSS file needs to be created separately
+import logoImage from '../../../assets/images/safebite-logo.jpg';
 
 const API_URL = 'https://render-test-iezh.onrender.com/api/restaurant';
 
@@ -39,28 +40,46 @@ const UserHomePage = () => {
 
 
 
-  const dietaryPreferences = [
-  { 
-    id: 'vegan', 
-    backendCode: 'VEGAN' // ← VEGAN_ASSET no backend
-  },
-  { 
-    id: 'gluten-free', 
-    backendCode: 'GLUTENFREE' // ← GLUTEN_FREE_ASSET no backend
-  },
-  { 
-    id: 'no-seafood', 
-    backendCode: 'SEAFOODFREE' // ← SEAFOOD_FREE_ASSET no backend  
-  },
-  { 
-    id: 'kosher', 
-    backendCode: 'KOSHER' // ← KOSHER_ASSET no backend
-  },
-  { 
-    id: 'halal', 
-    backendCode: 'HALAL' // ← HALAL_ASSET no backend
-  }
-];9
+// Substitua o seu array por este:
+
+const dietaryPreferences = [
+    { 
+        id: 'vegan', 
+        label: 'Vegan', 
+        backendCode: 'VEGAN', 
+        icon: <Leaf size={20} /> 
+    },
+    { 
+        id: 'gluten-free', 
+        label: 'Gluten-Free',
+        backendCode: 'GLUTENFREE',
+        icon: <Wheat size={20} />
+    },
+    { 
+        id: 'no-seafood', 
+        label: 'No Seafood',
+        backendCode: 'SEAFOODFREE',
+        icon: <Fish size={20} />  
+    },
+    { 
+        id: 'kosher', 
+        label: 'Kosher',
+        backendCode: 'KOSHER',
+        icon: <Star size={20} />
+    },
+    { 
+        id: 'halal', 
+        label: 'Halal',
+        backendCode: 'HALAL',
+        icon: <Moon size={20} />
+    },
+    {
+        id: 'lactose-free',
+        label: 'Lactose-Free',
+        backendCode: 'LACTOSEFREE', // Assumindo o código do backend
+        icon: <Droplet size={20} />
+    }
+];
 
 
 
@@ -103,7 +122,9 @@ const UserHomePage = () => {
             <MapPin size={20} />
             <span>Your Location</span>
           </div>
-          <h1 className="logo">Food for All</h1>
+            <div className="logo-container">
+              <img src={logoImage} alt="Logo da SafeBite" className="brand-logo" />
+            </div>
           <div style={{ position: 'relative' }} className="user-menu-container">
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
@@ -311,7 +332,7 @@ const UserHomePage = () => {
 
         {/* Restaurant Section */}
         <div className="restaurants-section">
-          <h2 className="restaurants-title">Restaurantes for you</h2>
+          <h2 className="restaurants-title">Restaurants for you</h2>
           <p className="restaurants-subtitle">Find options based on your preferences</p>
 
           {isLoading && <p>Loading Restaurants...</p>}
