@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Search, MapPin, User, Wheat, Droplet, Leaf, Moon, Fish, Star, Clock, ChevronDown, Settings, LogOut, Heart, ShoppingBag } from 'lucide-react';
 import './UserHomePage.css'; // CSS file needs to be created separately
 
-const API_URL = 'http://localhost:8000/api/restaurant';
+const API_URL = 'https://render-test-iezh.onrender.com/api/restaurant';
 
 const UserHomePage = () => {
   const [restaurants, setRestaurants] = useState([]);
@@ -13,6 +13,7 @@ const UserHomePage = () => {
   const [selectedPreferences, setSelectedPreferences] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const navigate = useNavigate();
 
   // O useEffect é executado quando o componente é montado
   useEffect(() => {
@@ -155,7 +156,8 @@ const UserHomePage = () => {
                 </div>
                 
                 <div style={{ padding: '8px 0' }}>
-                  <button
+                  <Link
+                    to="/user-home/profile" // <-- O destino da navegação
                     style={{
                       width: '100%',
                       padding: '12px 16px',
@@ -167,14 +169,15 @@ const UserHomePage = () => {
                       cursor: 'pointer',
                       fontSize: '14px',
                       color: '#374151',
-                      textAlign: 'left'
+                      textAlign: 'left',
+                      textDecoration: 'none' // <-- Remove o sublinhado do link
                     }}
                     onMouseEnter={(e) => e.target.style.backgroundColor = '#f9fafb'}
                     onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
                   >
                     <User size={16} />
                     <span>My Profile</span>
-                  </button>
+                  </Link>
                   
                   <button
                     style={{
