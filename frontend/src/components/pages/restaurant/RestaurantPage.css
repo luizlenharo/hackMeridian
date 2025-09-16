@@ -18,8 +18,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  margin: 0 auto;
+  padding: 1rem 0;
+  margin: 0;
 }
 
 .location {
@@ -127,7 +127,6 @@
 /* Main Content */
 .main-content {
   margin: 0 auto;
-  padding-block: 2rem;
 }
 
 .product-section {
@@ -338,21 +337,6 @@
   }
 }
 
-/* Telas muito pequenas (celulares) */
-@media (max-width: 480px) {
-  .restaurant-name {
-    font-size: 1.5rem;
-  }
-
-  .products-container {
-    gap: 1rem;
-  }
-
-  .product-card {
-    min-width: 220px;
-  }
-}
-
 /*
   OBS: As classes abaixo (.preferences-grid, .restaurants-grid)
   não parecem pertencer a este componente específico, mas estou
@@ -369,17 +353,3 @@
   }
 }
 
-@media (max-width: 768px) {
-  .preferences-grid {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 95%;
-  }
-  
-  .restaurants-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .search-container {
-    max-width: 90%;
-  }
-}
