@@ -1,54 +1,97 @@
-import React, { useState } from 'react';
-import { Search, MapPin, User, Wheat, Droplet, Leaf, Moon, Fish, Star, Clock, ChevronDown, Settings, LogOut, Heart, ShoppingBag } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { Search, MapPin, User, Wheat, Droplet, Leaf, Moon, Fish, Star, Clock, ChevronDown, Settings, LogOut, Heart, ShoppingBag, Loader } from 'lucide-react';
 
 import './RestaurantPage.css';
 
 const RestaurantPage = () => {
+  const { id } = useParams(); // Obtém o ID do restaurante da URL
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [restaurant, setRestaurant] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [productCategories, setProductCategories] = useState([]);
 
-  // Dados mockados do restaurante
-  const restaurant = {
-    name: "Green Garden",
-    logo: "https://via.placeholder.com/80x80/4ade80/ffffff?text=GG",
-    coverImage: "https://via.placeholder.com/1200x400/10b981/ffffff?text=Restaurant+Cover",
-    rating: 4.8,
-    address: "Rua das Flores, 123 - Centro",
-    certifications: ["Orgânico", "Vegano", "Sustentável"]
-  };
+  // Função para buscar os dados do restaurante
+  useEffect(() => {
+    const fetchRestaurantData = async () => {
+      try {
+        setLoading(true);
+        // Faz a requisição para a API
+        const response = await fetch(`https://render-test-iezh.onrender.com/api/restaurant/${id || 1}`);
+        
+        if (!response.ok) {
+          throw new Error(`Erro ao buscar dados do restaurante: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (!data.success) {
+          throw new Error(data.message || 'Erro ao buscar dados do restaurante');
+        }
+        
+        console.log("API Response:", data); // Log para debug
+        
+        // Formata os dados do restaurante com base na resposta real da API
+        const restaurantData = {
+          id: data.data.id,
+          name: data.data.name,
+          logo: data.data.logo || `https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=80&h=80&fit=crop&crop=faces&auto=format&q=80`,
+          coverImage: data.data.cover_image || "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&h=400&fit=crop&auto=format&q=80",
+          rating: data.data.rating || 4.5,
+          address: data.data.address,
+          stellarPublicKey: data.data.stellar_public_key,
+          // Adaptação para lidar com o formato real das certificações
+          certifications: Array.isArray(data.data.certifications) ? data.data.certifications : []
+        };
+        
+        setRestaurant(restaurantData);
+        
+        // Mantém os dados mockados para os produtos
+        setProductCategories([
+          {
+            id: 'pratos-principais',
+            name: 'Pratos Principais',
+            products: [
+              { id: 1, name: 'Risotto de Cogumelos', price: 'R$ 32,90', image: 'https://images.unsplash.com/photo-1574484284002-952d92456975?w=200&h=150&fit=crop&auto=format&q=80', description: 'Risotto cremoso com cogumelos frescos' },
+              { id: 2, name: 'Hambúrguer Vegano', price: 'R$ 28,50', image: 'https://images.unsplash.com/photo-1585238342024-78d387f4a707?w=200&h=150&fit=crop&auto=format&q=80', description: 'Hambúrguer artesanal 100% vegetal' },
+              { id: 3, name: 'Salada Caesar', price: 'R$ 24,90', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&h=150&fit=crop&auto=format&q=80', description: 'Salada caesar com molho especial' },
+              { id: 4, name: 'Pasta Pesto', price: 'R$ 26,90', image: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=200&h=150&fit=crop&auto=format&q=80', description: 'Massa artesanal com pesto de manjericão' },
+              { id: 5, name: 'Quinoa Bowl', price: 'R$ 29,90', image: 'https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=200&h=150&fit=crop&auto=format&q=80', description: 'Bowl nutritivo com quinoa e vegetais' }
+            ]
+          },
+          {
+            id: 'bebidas',
+            name: 'Bebidas',
+            products: [
+              { id: 6, name: 'Suco Verde', price: 'R$ 12,90', image: 'https://images.unsplash.com/photo-1622597467836-f3e6707e1696?w=200&h=150&fit=crop&auto=format&q=80', description: 'Suco detox com couve e maçã' },
+              { id: 7, name: 'Kombucha', price: 'R$ 15,90', image: 'https://images.unsplash.com/photo-1595864585991-0ad021961d13?w=200&h=150&fit=crop&auto=format&q=80', description: 'Kombucha artesanal sabor gengibre' },
+              { id: 8, name: 'Água de Coco', price: 'R$ 8,90', image: 'https://images.unsplash.com/photo-1546470427-30ab5df789bd?w=200&h=150&fit=crop&auto=format&q=80', description: 'Água de coco natural' },
+              { id: 9, name: 'Smoothie', price: 'R$ 16,90', image: 'https://images.unsplash.com/photo-1553530666-ba11a90bb437?w=200&h=150&fit=crop&auto=format&q=80', description: 'Smoothie de frutas vermelhas' }
+            ]
+          },
+          {
+            id: 'sobremesas',
+            name: 'Sobremesas',
+            products: [
+              { id: 10, name: 'Brownie Vegano', price: 'R$ 18,90', image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=200&h=150&fit=crop&auto=format&q=80', description: 'Brownie sem glúten e vegano' },
+              { id: 11, name: 'Mousse de Açaí', price: 'R$ 16,90', image: 'https://images.unsplash.com/photo-1615484477778-ca3b77940c25?w=200&h=150&fit=crop&auto=format&q=80', description: 'Mousse cremoso de açaí orgânico' },
+              { id: 12, name: 'Pudim de Chia', price: 'R$ 14,90', image: 'https://images.unsplash.com/photo-1621236378699-8597faf6a11a?w=200&h=150&fit=crop&auto=format&q=80', description: 'Pudim nutritivo de chia com frutas' }
+            ]
+          }
+        ]);
+        
+      } catch (err) {
+        console.error('Erro ao buscar dados do restaurante:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const productCategories = [
-    {
-      id: 'pratos-principais',
-      name: 'Pratos Principais',
-      products: [
-        { id: 1, name: 'Risotto de Cogumelos', price: 'R$ 32,90', image: 'https://via.placeholder.com/200x150/22c55e/ffffff?text=Risotto', description: 'Risotto cremoso com cogumelos frescos' },
-        { id: 2, name: 'Hambúrguer Vegano', price: 'R$ 28,50', image: 'https://via.placeholder.com/200x150/22c55e/ffffff?text=Burger', description: 'Hambúrguer artesanal 100% vegetal' },
-        { id: 3, name: 'Salada Caesar', price: 'R$ 24,90', image: 'https://via.placeholder.com/200x150/22c55e/ffffff?text=Salad', description: 'Salada caesar com molho especial' },
-        { id: 4, name: 'Pasta Pesto', price: 'R$ 26,90', image: 'https://via.placeholder.com/200x150/22c55e/ffffff?text=Pasta', description: 'Massa artesanal com pesto de manjericão' },
-        { id: 5, name: 'Quinoa Bowl', price: 'R$ 29,90', image: 'https://via.placeholder.com/200x150/22c55e/ffffff?text=Bowl', description: 'Bowl nutritivo com quinoa e vegetais' }
-      ]
-    },
-    {
-      id: 'bebidas',
-      name: 'Bebidas',
-      products: [
-        { id: 6, name: 'Suco Verde', price: 'R$ 12,90', image: 'https://via.placeholder.com/200x150/10b981/ffffff?text=Juice', description: 'Suco detox com couve e maçã' },
-        { id: 7, name: 'Kombucha', price: 'R$ 15,90', image: 'https://via.placeholder.com/200x150/10b981/ffffff?text=Kombucha', description: 'Kombucha artesanal sabor gengibre' },
-        { id: 8, name: 'Água de Coco', price: 'R$ 8,90', image: 'https://via.placeholder.com/200x150/10b981/ffffff?text=Coconut', description: 'Água de coco natural' },
-        { id: 9, name: 'Smoothie', price: 'R$ 16,90', image: 'https://via.placeholder.com/200x150/10b981/ffffff?text=Smoothie', description: 'Smoothie de frutas vermelhas' }
-      ]
-    },
-    {
-      id: 'sobremesas',
-      name: 'Sobremesas',
-      products: [
-        { id: 10, name: 'Brownie Vegano', price: 'R$ 18,90', image: 'https://via.placeholder.com/200x150/059669/ffffff?text=Brownie', description: 'Brownie sem glúten e vegano' },
-        { id: 11, name: 'Mousse de Açaí', price: 'R$ 16,90', image: 'https://via.placeholder.com/200x150/059669/ffffff?text=Mousse', description: 'Mousse cremoso de açaí orgânico' },
-        { id: 12, name: 'Pudim de Chia', price: 'R$ 14,90', image: 'https://via.placeholder.com/200x150/059669/ffffff?text=Pudding', description: 'Pudim nutritivo de chia com frutas' }
-      ]
-    }
-  ];
+    fetchRestaurantData();
+  }, [id]);
 
   const scrollContainer = (containerId, direction) => {
     const container = document.getElementById(containerId);
@@ -63,16 +106,113 @@ const RestaurantPage = () => {
     });
   };
 
+  // Renderiza um estado de carregamento
+  if (loading) {
+    return (
+      <div className="loading-container" style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        flexDirection: 'column',
+        gap: '1rem'
+      }}>
+        <Loader size={40} className="animate-spin" color="#22c55e" />
+        <p>Carregando informações do restaurante...</p>
+      </div>
+    );
+  }
+
+  // Renderiza um estado de erro
+  if (error) {
+    return (
+      <div className="error-container" style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        flexDirection: 'column',
+        gap: '1rem',
+        padding: '0 2rem',
+        textAlign: 'center'
+      }}>
+        <div style={{ color: '#dc2626', fontSize: '2rem' }}>⚠️</div>
+        <h2>Erro ao carregar o restaurante</h2>
+        <p>{error}</p>
+        <button 
+          onClick={() => window.location.reload()}
+          style={{
+            backgroundColor: '#22c55e',
+            color: 'white',
+            border: 'none',
+            padding: '0.75rem 1.5rem',
+            borderRadius: '0.5rem',
+            fontWeight: '500',
+            cursor: 'pointer',
+            marginTop: '1rem'
+          }}
+        >
+          Tentar novamente
+        </button>
+      </div>
+    );
+  }
+
+  // Se não tiver dados do restaurante
+  if (!restaurant) {
+    return (
+      <div className="error-container" style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        flexDirection: 'column',
+        gap: '1rem'
+      }}>
+        <h2>Restaurante não encontrado</h2>
+        <p>Não foi possível encontrar informações para este restaurante.</p>
+      </div>
+    );
+  }
+
+  // Função para mapear os códigos de certificação para nomes mais amigáveis
+  const getCertificationName = (cert) => {
+    // Adaptado para lidar com diferentes formatos de certificação
+    const code = typeof cert === 'string' ? cert : (cert.asset_code || cert.code || '');
+    
+    const certMap = {
+      'VEGAN': 'Vegano',
+      'GLUTEN_FREE': 'Sem Glúten',
+      'SEAFOOD_FREE': 'Sem Frutos do Mar',
+      'KOSHER': 'Kosher',
+      'HALAL': 'Halal',
+      'ORGANIC': 'Orgânico',
+      'SUSTAINABLE': 'Sustentável'
+    };
+    
+    return certMap[code] || code;
+  };
+
   return (
     <div className="restaurant-page">
       {/* Header */}
       <header className="header">
-        <div className="header-content">
+        <div className="header-content" style={{ padding: '0 2rem' }}>
           <div className="location-section">
             <MapPin size={20} />
             <span>Your Location</span>
           </div>
-          <h1 className="logo">Food for All</h1>
+          <div className="logo-container">
+            <img 
+              src="/safebite.png" 
+              alt="SafeBite Logo" 
+              className="safebite-logo"
+              style={{ 
+                height: '40px',
+                objectFit: 'contain'
+              }}
+            />
+          </div>
           <div style={{ position: 'relative' }} className="user-menu-container">
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
@@ -241,7 +381,7 @@ const RestaurantPage = () => {
       {/* Restaurant Cover */}
       <div className="restaurant-cover">
         <img src={restaurant.coverImage} alt="Restaurant Cover" className="cover-image" />
-        <div className="cover-overlay">
+        <div className="cover-overlay" style={{ padding: '3rem 2rem 2rem' }}>
           <div className="restaurant-info">
             <img src={restaurant.logo} alt="Restaurant Logo" className="restaurant-logo" />
             <div className="restaurant-details">
@@ -250,18 +390,39 @@ const RestaurantPage = () => {
                 <span className="rating">⭐ {restaurant.rating}</span>
                 <span className="address">{restaurant.address}</span>
               </div>
-              <div className="certifications">
-                {restaurant.certifications.map((cert, index) => (
-                  <span key={index} className="certification-badge">{cert}</span>
-                ))}
-              </div>
+              {restaurant.certifications && restaurant.certifications.length > 0 ? (
+                <div className="certifications">
+                  {restaurant.certifications.map((cert, index) => (
+                    <span key={index} className="certification-badge">
+                      {getCertificationName(cert)}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <div className="certifications">
+                  <span 
+                    className="no-certifications"
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      backdropFilter: 'blur(4px)',
+                      padding: '0.25rem 0.75rem',
+                      borderRadius: '20px',
+                      color: 'white',
+                      border: '1px solid rgba(255, 255, 255, 0.3)',
+                      fontSize: '0.8rem'
+                    }}
+                  >
+                    Sem certificações registradas
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <main className="main-content">
+      <main className="main-content" style={{ padding: '2rem' }}>
         {productCategories.map((category) => (
           <section key={category.id} className="product-section">
             <div className="section-header">
