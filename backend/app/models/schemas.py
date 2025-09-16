@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
 
 
 class CertificationType(str, Enum):
@@ -79,6 +79,32 @@ class AuditDecision(BaseModel):
     certification_id: int
     approved: bool
     notes: Optional[str] = Field(None, max_length=500)
+
+
+# User Models
+class UserCreate(BaseModel):
+    name: str = Field(..., min_length=2, max_length=100)
+    email: str = Field(..., description="Email address")
+    password: str = Field(..., min_length=8, description="Password")
+
+
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
+
+class UserResponse(BaseModel):
+    id: int
+    name: str
+    email: str
+    stellar_public_key: str
+    created_at: datetime
+
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=2, max_length=100)
+    email: Optional[str] = None
+    password: Optional[str] = Field(None, min_length=8)
 
 
 # Response Models
