@@ -22,13 +22,13 @@ const RestaurantPage = () => {
         const response = await fetch(`https://render-test-iezh.onrender.com/api/restaurant/${id || 1}`);
         
         if (!response.ok) {
-          throw new Error(`Erro ao buscar dados do restaurante: ${response.status}`);
+          throw new Error(`An error occured trying to fetch the restaurant: ${response.status}`);
         }
         
         const data = await response.json();
         
         if (!data.success) {
-          throw new Error(data.message || 'Erro ao buscar dados do restaurante');
+          throw new Error(data.message || 'An error occured trying to fetch the restaurant');
         }
         
         console.log("API Response:", data); // Log para debug
@@ -51,39 +51,39 @@ const RestaurantPage = () => {
         // Mantém os dados mockados para os produtos
         setProductCategories([
           {
-            id: 'pratos-principais',
-            name: 'Pratos Principais',
+            id: 'main-dishes',
+            name: 'Main Dishes',
             products: [
-              { id: 1, name: 'Risotto de Cogumelos', price: 'R$ 32,90', image: 'https://images.unsplash.com/photo-1574484284002-952d92456975?w=200&h=150&fit=crop&auto=format&q=80', description: 'Risotto cremoso com cogumelos frescos' },
-              { id: 2, name: 'Hambúrguer Vegano', price: 'R$ 28,50', image: 'https://images.unsplash.com/photo-1585238342024-78d387f4a707?w=200&h=150&fit=crop&auto=format&q=80', description: 'Hambúrguer artesanal 100% vegetal' },
-              { id: 3, name: 'Salada Caesar', price: 'R$ 24,90', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&h=150&fit=crop&auto=format&q=80', description: 'Salada caesar com molho especial' },
-              { id: 4, name: 'Pasta Pesto', price: 'R$ 26,90', image: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=200&h=150&fit=crop&auto=format&q=80', description: 'Massa artesanal com pesto de manjericão' },
-              { id: 5, name: 'Quinoa Bowl', price: 'R$ 29,90', image: 'https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=200&h=150&fit=crop&auto=format&q=80', description: 'Bowl nutritivo com quinoa e vegetais' }
+              { id: 1, name: 'Mushroom Risotto', price: 'XLM 16,45', image: 'https://images.unsplash.com/photo-1574484284002-952d92456975?w=200&h=150&fit=crop&auto=format&q=80', description: 'Risotto cremoso com cogumelos frescos' },
+              { id: 2, name: 'Vegan Hamburguer', price: 'XLM 14,25', image: 'https://images.unsplash.com/photo-1585238342024-78d387f4a707?w=200&h=150&fit=crop&auto=format&q=80', description: 'Hambúrguer artesanal 100% vegetal' },
+              { id: 3, name: 'Caesar Salad', price: 'XLM 12,45', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&h=150&fit=crop&auto=format&q=80', description: 'Salada caesar com molho especial' },
+              { id: 4, name: 'Pasta Pesto', price: 'XLM 13,45', image: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=200&h=150&fit=crop&auto=format&q=80', description: 'Massa artesanal com pesto de manjericão' },
+              { id: 5, name: 'Quinoa Bowl', price: 'XLM 14,95', image: 'https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=200&h=150&fit=crop&auto=format&q=80', description: 'Bowl nutritivo com quinoa e vegetais' }
             ]
           },
           {
-            id: 'bebidas',
-            name: 'Bebidas',
+            id: 'drinks',
+            name: 'drinks',
             products: [
-              { id: 6, name: 'Suco Verde', price: 'R$ 12,90', image: 'https://images.unsplash.com/photo-1622597467836-f3e6707e1696?w=200&h=150&fit=crop&auto=format&q=80', description: 'Suco detox com couve e maçã' },
-              { id: 7, name: 'Kombucha', price: 'R$ 15,90', image: 'https://images.unsplash.com/photo-1595864585991-0ad021961d13?w=200&h=150&fit=crop&auto=format&q=80', description: 'Kombucha artesanal sabor gengibre' },
-              { id: 8, name: 'Água de Coco', price: 'R$ 8,90', image: 'https://images.unsplash.com/photo-1546470427-30ab5df789bd?w=200&h=150&fit=crop&auto=format&q=80', description: 'Água de coco natural' },
-              { id: 9, name: 'Smoothie', price: 'R$ 16,90', image: 'https://images.unsplash.com/photo-1553530666-ba11a90bb437?w=200&h=150&fit=crop&auto=format&q=80', description: 'Smoothie de frutas vermelhas' }
+              { id: 6, name: 'Green Juice', price: 'XLM 6,45', image: 'https://images.unsplash.com/photo-1622597467836-f3e6707e1696?w=200&h=150&fit=crop&auto=format&q=80', description: 'Suco detox com couve e maçã' },
+              { id: 7, name: 'Kombucha', price: 'XLM 7,95', image: 'https://images.unsplash.com/photo-1595864585991-0ad021961d13?w=200&h=150&fit=crop&auto=format&q=80', description: 'Kombucha artesanal sabor gengibre' },
+              { id: 8, name: 'Coconut Water', price: 'XLM 4,45', image: 'https://images.unsplash.com/photo-1546470427-30ab5df789bd?w=200&h=150&fit=crop&auto=format&q=80', description: 'Água de coco natural' },
+              { id: 9, name: 'Smoothie', price: 'XLM 8,45', image: 'https://images.unsplash.com/photo-1553530666-ba11a90bb437?w=200&h=150&fit=crop&auto=format&q=80', description: 'Smoothie de frutas vermelhas' }
             ]
           },
           {
-            id: 'sobremesas',
-            name: 'Sobremesas',
+            id: 'desserts',
+            name: 'desserts',
             products: [
-              { id: 10, name: 'Brownie Vegano', price: 'R$ 18,90', image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=200&h=150&fit=crop&auto=format&q=80', description: 'Brownie sem glúten e vegano' },
-              { id: 11, name: 'Mousse de Açaí', price: 'R$ 16,90', image: 'https://images.unsplash.com/photo-1615484477778-ca3b77940c25?w=200&h=150&fit=crop&auto=format&q=80', description: 'Mousse cremoso de açaí orgânico' },
-              { id: 12, name: 'Pudim de Chia', price: 'R$ 14,90', image: 'https://images.unsplash.com/photo-1621236378699-8597faf6a11a?w=200&h=150&fit=crop&auto=format&q=80', description: 'Pudim nutritivo de chia com frutas' }
+              { id: 10, name: 'Vegan Brownie ', price: 'XLM 8,45', image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=200&h=150&fit=crop&auto=format&q=80', description: 'Brownie sem glúten e vegano' },
+              { id: 11, name: 'Cheesecake', price: 'XLM 8,45', image: 'https://images.unsplash.com/photo-1615484477778-ca3b77940c25?w=200&h=150&fit=crop&auto=format&q=80', description: 'Mousse cremoso de açaí orgânico' },
+              { id: 12, name: 'Ice Cream', price: 'XLM 7,95', image: 'https://images.unsplash.com/photo-1621236378699-8597faf6a11a?w=200&h=150&fit=crop&auto=format&q=80', description: 'Pudim nutritivo de chia com frutas' }
             ]
           }
         ]);
         
       } catch (err) {
-        console.error('Erro ao buscar dados do restaurante:', err);
+        console.error('An error occured trying to find the restaurant:', err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -118,7 +118,7 @@ const RestaurantPage = () => {
         gap: '1rem'
       }}>
         <Loader size={40} className="animate-spin" color="#22c55e" />
-        <p>Carregando informações do restaurante...</p>
+        <p>Loading restaurant's information...</p>
       </div>
     );
   }
@@ -152,7 +152,7 @@ const RestaurantPage = () => {
             marginTop: '1rem'
           }}
         >
-          Tentar novamente
+          Try again
         </button>
       </div>
     );
@@ -169,8 +169,8 @@ const RestaurantPage = () => {
         flexDirection: 'column',
         gap: '1rem'
       }}>
-        <h2>Restaurante não encontrado</h2>
-        <p>Não foi possível encontrar informações para este restaurante.</p>
+        <h2>Restaurant not found</h2>
+        <p>It was not possible to find information on this restaurant.</p>
       </div>
     );
   }
@@ -181,13 +181,13 @@ const RestaurantPage = () => {
     const code = typeof cert === 'string' ? cert : (cert.asset_code || cert.code || '');
     
     const certMap = {
-      'VEGAN': 'Vegano',
-      'GLUTEN_FREE': 'Sem Glúten',
-      'SEAFOOD_FREE': 'Sem Frutos do Mar',
+      'VEGAN': 'Vegan',
+      'GLUTEN_FREE': 'Gluten-Free',
+      'SEAFOOD_FREE': 'No Seafood',
       'KOSHER': 'Kosher',
       'HALAL': 'Halal',
-      'ORGANIC': 'Orgânico',
-      'SUSTAINABLE': 'Sustentável'
+      'ORGANIC': 'Organic',
+      'SUSTAINABLE': 'Sustainable',
     };
     
     return certMap[code] || code;
@@ -412,7 +412,7 @@ const RestaurantPage = () => {
                       fontSize: '0.8rem'
                     }}
                   >
-                    Sem certificações registradas
+                    No certifications available
                   </span>
                 </div>
               )}
